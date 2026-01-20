@@ -127,7 +127,7 @@ export default function ShadowOperatorPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/dashboard" className="btn-primary text-lg flex items-center gap-2">
+              <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
                 <Lock className="w-5 h-5" />
                 Access Full Plan
               </Link>
@@ -272,7 +272,7 @@ export default function ShadowOperatorPage() {
             building your Shadow Operating business today.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/dashboard" className="btn-primary text-lg flex items-center gap-2">
+            <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
               Get Full Access
               <ArrowRight className="w-5 h-5" />
             </Link>

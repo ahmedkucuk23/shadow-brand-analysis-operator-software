@@ -128,7 +128,7 @@ export default function BrandAnalysisPage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/dashboard" className="btn-primary text-lg flex items-center gap-2">
+              <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
                 <Lock className="w-5 h-5" />
                 Access Analysis Tools
               </Link>
@@ -309,7 +309,7 @@ export default function BrandAnalysisPage() {
             with a single subscription.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/dashboard" className="btn-primary text-lg flex items-center gap-2">
+            <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
               Get Started
               <ArrowRight className="w-5 h-5" />
             </Link>
