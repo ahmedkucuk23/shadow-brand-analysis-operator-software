@@ -23,7 +23,6 @@ import {
   Globe,
   FileDown,
 } from "lucide-react";
-import { downloadPDF as downloadProfessionalPDF, downloadLaunchPDF, type DocumentType } from "@/lib/pdf/generator";
 
 // Supported languages
 const LANGUAGES = [
@@ -713,9 +712,9 @@ function MonetizationGameplanStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Monetization_Gameplan", data.content, "monetization-gameplan", data.creatorName);
+    downloadPDF("Monetization_Gameplan", data.content, "monetization-gameplan", data.creatorName);
   };
 
   const handleUpload = (content: string) => {
@@ -1084,9 +1083,9 @@ function PersonalityDNAStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Personality_DNA", data.content, "personality-dna");
+    downloadPDF("Personality_DNA", data.content, "personality-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -1323,9 +1322,9 @@ function AudienceDNAStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Audience_DNA", data.content, "audience-dna");
+    downloadPDF("Audience_DNA", data.content, "audience-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -1635,9 +1634,9 @@ function UVZAnalysisStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("UVZ_Analysis_Top20", data.content, "uvz-analysis");
+    downloadPDF("UVZ_Analysis_Top20", data.content, "uvz-analysis");
   };
 
   const handleUpload = (content: string) => {
@@ -1749,9 +1748,9 @@ function CoachingOfferStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Coaching_Offer", data.content, "coaching-offer");
+    downloadPDF("Coaching_Offer", data.content, "coaching-offer");
   };
 
   const handleUpload = (content: string) => {
@@ -1873,9 +1872,9 @@ function CoachingCharterStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Coaching_Charter", data.content, "coaching-charter");
+    downloadPDF("Coaching_Charter", data.content, "coaching-charter");
   };
 
   const handleUpload = (content: string) => {
@@ -1975,9 +1974,9 @@ function ProductDNAStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("Product_DNA", data.content, "product-dna");
+    downloadPDF("Product_DNA", data.content, "product-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -2093,18 +2092,21 @@ function Launch14DayStep({
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!data.content) return;
-    await downloadPDF("14_Day_Launch_Overview", data.content, "14day-launch");
+    downloadPDF("14_Day_Launch_Overview", data.content, "14day-launch");
   };
 
-  const handleDownloadDay = async (day: number) => {
+  const handleDownloadDay = (day: number) => {
     if (!data.dailyPlaybooks || !data.dailyPlaybooks[`day${day}`]) return;
-    await downloadPDF(`Day_${day.toString().padStart(2, "0")}_Playbook`, data.dailyPlaybooks[`day${day}`], "14day-launch");
+    downloadPDF(`Day_${day.toString().padStart(2, "0")}_Playbook`, data.dailyPlaybooks[`day${day}`], "14day-launch");
   };
 
-  const handleDownloadAllDays = async () => {
+  const handleDownloadAllDays = () => {
     if (!data.dailyPlaybooks) return;
+    // Combine all days into one document
+    let allContent = "# 14-DAY LAUNCH - COMPLETE PLAYBOOK\n\n";
+
     const dayPhases: { [key: number]: { title: string; phase: string } } = {
       1: { title: "Survey Day", phase: "WARM UP" },
       2: { title: "Validation Day", phase: "WARM UP" },
@@ -2122,21 +2124,15 @@ function Launch14DayStep({
       14: { title: "Cart Close", phase: "OPEN CART" },
     };
 
-    const days = Array.from({ length: 14 }, (_, i) => i + 1)
-      .filter((day) => data.dailyPlaybooks?.[`day${day}`])
-      .map((day) => ({
-        day,
-        title: dayPhases[day]?.title || `Day ${day}`,
-        phase: dayPhases[day]?.phase || "LAUNCH",
-        content: data.dailyPlaybooks![`day${day}`],
-      }));
+    for (let day = 1; day <= 14; day++) {
+      if (data.dailyPlaybooks[`day${day}`]) {
+        const phase = dayPhases[day];
+        allContent += `\n---\n\n## DAY ${day.toString().padStart(2, "0")}: ${phase?.title || `Day ${day}`}\n**Phase: ${phase?.phase || "LAUNCH"}**\n\n`;
+        allContent += data.dailyPlaybooks[`day${day}`] + "\n";
+      }
+    }
 
-    await downloadLaunchPDF(
-      days,
-      { type: "14day-launch", date: new Date().toLocaleDateString() },
-      true,
-      "14_Day_Launch_Complete"
-    );
+    downloadPDF("14_Day_Launch_Complete", allContent, "14day-launch");
   };
 
   const handleUpload = (content: string) => {
@@ -2554,61 +2550,384 @@ function GeneratedContentView({
   );
 }
 
+// Document titles for PDF
+const documentTitles: Record<string, { title: string; subtitle: string }> = {
+  "monetization-gameplan": { title: "MONETIZATION GAMEPLAN", subtitle: "Revenue Strategy Blueprint" },
+  "personality-dna": { title: "PERSONALITY DNA", subtitle: "Your Unique Creator Identity" },
+  "audience-dna": { title: "AUDIENCE DNA", subtitle: "Deep Audience Understanding" },
+  "uvz-analysis": { title: "UVZ ANALYSIS", subtitle: "Top 20 Content Strategy" },
+  "coaching-offer": { title: "COACHING OFFER", subtitle: "Complete Offer Framework" },
+  "coaching-charter": { title: "COACHING CHARTER", subtitle: "One-Page Offer Summary" },
+  "product-dna": { title: "PRODUCT DNA", subtitle: "Master Reference Document" },
+  "14day-launch": { title: "14-DAY LAUNCH", subtitle: "Complete Daily Action Plan" },
+};
+
+// Convert markdown to styled HTML
+function markdownToHTML(markdown: string): string {
+  let html = markdown;
+
+  // Escape HTML entities first
+  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Handle code blocks (``` ... ```)
+  html = html.replace(/```[\s\S]*?```/g, (match) => {
+    const code = match.slice(3, -3).trim();
+    return `<div class="code-block">${code}</div>`;
+  });
+
+  // Handle tables
+  html = html.replace(/\|(.+)\|\n\|[-| ]+\|\n((?:\|.+\|\n?)+)/g, (match, header, body) => {
+    const headers = header.split('|').filter((h: string) => h.trim()).map((h: string) => `<th>${h.trim()}</th>`).join('');
+    const rows = body.trim().split('\n').map((row: string) => {
+      const cells = row.split('|').filter((c: string) => c.trim()).map((c: string) => `<td>${c.trim()}</td>`).join('');
+      return `<tr>${cells}</tr>`;
+    }).join('');
+    return `<table><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table>`;
+  });
+
+  // Handle headers with section numbers
+  let sectionNum = 0;
+  html = html.replace(/^## (\d+)\. (.+)$/gm, (match, num, title) => {
+    sectionNum++;
+    return `<div class="section-header"><span class="section-num">${String(sectionNum).padStart(2, '0')}</span><h2>${title}</h2><div class="section-line"></div></div>`;
+  });
+
+  // Handle remaining ## headers
+  html = html.replace(/^## (.+)$/gm, (match, title) => {
+    sectionNum++;
+    return `<div class="section-header"><span class="section-num">${String(sectionNum).padStart(2, '0')}</span><h2>${title}</h2><div class="section-line"></div></div>`;
+  });
+
+  // Handle ### headers
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+
+  // Handle #### headers
+  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+
+  // Handle # headers (main title - skip as we have cover)
+  html = html.replace(/^# (.+)$/gm, '<h1 class="main-title">$1</h1>');
+
+  // Handle bold text
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // Handle italic text
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  // Handle blockquotes
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Handle unordered lists
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+
+  // Handle numbered lists
+  html = html.replace(/^\d+\. (.+)$/gm, '<li class="numbered">$1</li>');
+
+  // Handle horizontal rules
+  html = html.replace(/^---$/gm, '<hr>');
+
+  // Handle line breaks and paragraphs
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+
+  // Wrap in paragraph tags
+  html = '<p>' + html + '</p>';
+
+  // Clean up empty paragraphs
+  html = html.replace(/<p>\s*<\/p>/g, '');
+  html = html.replace(/<p>\s*<(div|table|ul|ol|h[1-4]|blockquote|hr)/g, '<$1');
+  html = html.replace(/<\/(div|table|ul|ol|h[1-4]|blockquote|hr)>\s*<\/p>/g, '</$1>');
+
+  return html;
+}
+
 // PDF Download Helper - Professional styled PDFs
-async function downloadPDF(
+function downloadPDF(
   filename: string,
   content: string,
-  documentType: DocumentType,
+  documentType: string,
   creatorName?: string
 ) {
-  try {
-    await downloadProfessionalPDF(
-      content,
-      {
-        type: documentType,
-        creatorName,
-        date: new Date().toLocaleDateString(),
-      },
-      `${filename}.pdf`
-    );
-  } catch (error) {
-    console.error("PDF generation error:", error);
-    // Fallback to simple print
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>${filename}</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.7; color: #1e293b; font-size: 14px; }
-            h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; color: #c9a227; }
-            h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #c9a227; }
-            h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 12px; }
-            p { margin-bottom: 16px; }
-            strong { color: #1e293b; font-weight: 600; }
-            ul { list-style: none; margin: 16px 0; }
-            li { padding: 8px 0 8px 24px; position: relative; }
-            li::before { content: '•'; position: absolute; left: 8px; color: #c9a227; font-weight: bold; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            th { background: #0a0a0a; color: white; font-weight: 600; text-align: left; padding: 12px 16px; }
-            td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
-            tr:nth-child(even) { background: #f8fafc; }
-            @media print { body { padding: 20px; } }
-          </style>
-        </head>
-        <body>
-          <h1>${filename.replace(/_/g, " ")}</h1>
-          <p style="color: #64748b; margin-bottom: 32px;">Generated on ${new Date().toLocaleDateString()}</p>
-          <pre style="white-space: pre-wrap; font-family: inherit;">${content}</pre>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
+  const docInfo = documentTitles[documentType] || { title: filename.replace(/_/g, ' '), subtitle: '' };
+  const formattedContent = markdownToHTML(content);
+  const date = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  const printWindow = window.open("", "_blank");
+  if (printWindow) {
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${filename}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+          :root {
+            --gold: #c9a227;
+            --dark: #0a0a0a;
+            --red: #e94560;
+            --gray: #64748b;
+            --light-gray: #f8fafc;
+          }
+
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
+          body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #1e293b;
+          }
+
+          /* Cover Page */
+          .cover-page {
+            width: 100%;
+            height: 100vh;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            page-break-after: always;
+            text-align: center;
+            padding: 60px;
+          }
+
+          .cover-badge {
+            background: var(--gold);
+            color: var(--dark);
+            padding: 8px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+          }
+
+          .cover-title {
+            color: white;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+          }
+
+          .cover-subtitle {
+            color: var(--gold);
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 60px;
+          }
+
+          .cover-divider {
+            width: 80px;
+            height: 2px;
+            background: var(--gold);
+            margin: 40px 0;
+          }
+
+          .cover-meta {
+            color: var(--gray);
+            font-size: 11px;
+          }
+
+          /* Content Pages */
+          .content {
+            padding: 50px 60px;
+            max-width: 100%;
+          }
+
+          /* Section Headers */
+          .section-header {
+            margin-top: 40px;
+            margin-bottom: 24px;
+          }
+
+          .section-num {
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+          }
+
+          .section-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+            padding-bottom: 0;
+            border: none;
+          }
+
+          .section-line {
+            width: 50px;
+            height: 3px;
+            background: var(--gold);
+            margin-top: 10px;
+          }
+
+          h1.main-title {
+            display: none; /* Hide as we have cover page */
+          }
+
+          h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 24px;
+            margin-bottom: 12px;
+          }
+
+          h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 16px;
+            margin-bottom: 8px;
+          }
+
+          p {
+            margin-bottom: 12px;
+          }
+
+          strong {
+            font-weight: 600;
+            color: var(--dark);
+          }
+
+          /* Lists */
+          ul {
+            list-style: none;
+            margin: 12px 0;
+            padding-left: 0;
+          }
+
+          li {
+            padding: 4px 0 4px 20px;
+            position: relative;
+          }
+
+          li::before {
+            content: '•';
+            position: absolute;
+            left: 6px;
+            color: var(--gold);
+            font-weight: bold;
+          }
+
+          li.numbered::before {
+            content: counter(list-counter) '.';
+            counter-increment: list-counter;
+            color: var(--gold);
+          }
+
+          /* Tables */
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10px;
+          }
+
+          thead tr {
+            background: var(--dark);
+          }
+
+          th {
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 14px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+
+          td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e2e8f0;
+          }
+
+          tbody tr:nth-child(even) {
+            background: var(--light-gray);
+          }
+
+          /* Code blocks */
+          .code-block {
+            background: var(--light-gray);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 10px;
+            white-space: pre-wrap;
+            border-left: 3px solid var(--gold);
+          }
+
+          /* Blockquotes */
+          blockquote {
+            background: #fef9e7;
+            border-left: 4px solid var(--gold);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-style: italic;
+            color: #334155;
+          }
+
+          hr {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 24px 0;
+          }
+
+          /* Print styles */
+          @media print {
+            .cover-page {
+              height: 100vh;
+              page-break-after: always;
+            }
+
+            .content {
+              padding: 40px 50px;
+            }
+
+            .section-header {
+              page-break-after: avoid;
+            }
+
+            table, blockquote, .code-block {
+              page-break-inside: avoid;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <!-- Cover Page -->
+        <div class="cover-page">
+          <div class="cover-badge">CREATOR DNA</div>
+          <h1 class="cover-title">${docInfo.title}</h1>
+          <p class="cover-subtitle">${docInfo.subtitle}</p>
+          <div class="cover-divider"></div>
+          ${creatorName ? `<p class="cover-meta">Prepared for: ${creatorName}</p>` : ''}
+          <p class="cover-meta">${date}</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+          ${formattedContent}
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+
+    // Wait for fonts to load then print
+    setTimeout(() => {
       printWindow.print();
-    }
+    }, 500);
   }
 }
