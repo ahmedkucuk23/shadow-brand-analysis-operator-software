@@ -1,108 +1,147 @@
 import Link from "next/link";
-import { 
-  ArrowRight, 
-  Lock, 
-  Calendar, 
-  Target, 
-  Lightbulb, 
-  Users, 
-  Megaphone, 
-  TrendingUp, 
-  Rocket, 
+import {
+  ArrowRight,
+  Lock,
+  Calendar,
+  Target,
+  Lightbulb,
+  Users,
+  Megaphone,
+  TrendingUp,
+  Rocket,
   BarChart3,
   CheckCircle2,
-  Star
+  Star,
+  MessageCircle,
+  Heart,
+  Zap,
+  ShoppingCart,
+  FileText,
+  Sparkles
 } from "lucide-react";
 
 export const metadata = {
-  title: "14-Day Strategic Plan | Shadow Operator",
-  description: "Master your Shadow Operating business with our comprehensive 14-day strategic plan. From foundation to scale, we guide you every step of the way.",
+  title: "14-Day Story Launch System | Creator Monetization",
+  description: "A psychological, story-based launch framework for selling digital products through Instagram Stories. From warm-up to close cart in 14 days.",
 };
 
 export default function ShadowOperatorPage() {
   const phases = [
     {
-      days: "Day 1-3",
-      title: "Foundation & Strategy",
+      days: "Days 1-3",
+      title: "Warm Up Phase",
+      icon: MessageCircle,
+      color: "amber",
+      description: "Build connection through listening. Ask questions, make your audience feel heard, and gather real problems. NO product mention.",
+      tasks: [
+        "Day 1: The Survey — polls, sliders, question stickers",
+        "Day 2: Validation & Curiosity — share responses, hint at solution",
+        "Day 3: Commitment Activation — announce free week, get 🔥 commits",
+      ],
+    },
+    {
+      days: "Days 4-7",
+      title: "Value Delivery Phase",
       icon: Lightbulb,
-      color: "blue",
-      description: "Establish your business foundation with clear goals, market research, and strategic positioning.",
+      color: "emerald",
+      description: "Deliver massive free value. Show transformation, share frameworks, and build reciprocity. Make them think: 'If free is this good...'",
       tasks: [
-        "Define your unique value proposition",
-        "Identify your target market and ideal customer",
-        "Conduct competitor landscape analysis",
-        "Set measurable goals and KPIs",
-        "Create your brand identity framework",
-        "Establish your business model canvas",
+        "Day 4: Opportunity — show what's possible, establish authority",
+        "Day 5: Integration — answer DMs, build relationships",
+        "Day 6: Transformation — deliver your 3-5 step framework",
+        "Day 7: Amplification — share wins and social proof",
       ],
     },
     {
-      days: "Day 4-7",
-      title: "Brand Development",
-      icon: Target,
-      color: "violet",
-      description: "Build a compelling brand that resonates with your audience and stands out in the market.",
+      days: "Days 8-9",
+      title: "Transition Phase",
+      icon: Zap,
+      color: "orange",
+      description: "Bridge from free value to paid offer. Create mental ownership and handle objections before they become blockers.",
       tasks: [
-        "Develop your brand voice and messaging",
-        "Create customer personas",
-        "Design your visual identity system",
-        "Build your content strategy foundation",
-        "Set up your online presence",
-        "Create your brand guidelines document",
+        "Day 8: Ownership Experience — 'Imagine having the complete system...'",
+        "Day 9: Pre-Cart Q&A — address doubts, announce exact launch time",
       ],
     },
     {
-      days: "Day 8-11",
-      title: "Market Launch",
-      icon: Megaphone,
-      color: "purple",
-      description: "Execute your go-to-market strategy and start acquiring your first customers.",
+      days: "Days 10-14",
+      title: "Open Cart Phase",
+      icon: ShoppingCart,
+      color: "rose",
+      description: "Launch with energy and urgency. Create buying momentum through social proof, handle last objections, and close with scarcity.",
       tasks: [
-        "Launch your marketing channels",
-        "Implement your sales funnel",
-        "Create your lead generation system",
-        "Set up email marketing automation",
-        "Launch social media presence",
-        "Begin outreach campaigns",
+        "Day 10: Launch Day 🚀 — doors open, FOMO energy",
+        "Day 11: Social Proof — share buyer DMs and momentum",
+        "Day 12: FAQ Day — remove remaining barriers",
+        "Day 13: 24-Hour Warning ⚠️ — maximum urgency",
+        "Day 14: Close Cart 🔒 — final countdown, actual close",
       ],
     },
+  ];
+
+  const systemPhases = [
     {
-      days: "Day 12-14",
-      title: "Scale & Optimize",
-      icon: TrendingUp,
-      color: "pink",
-      description: "Analyze results, optimize processes, and prepare for sustainable growth.",
-      tasks: [
-        "Analyze initial performance data",
-        "Optimize conversion funnels",
-        "Implement feedback loops",
-        "Create scaling roadmap",
-        "Set up monitoring systems",
-        "Plan for month 2 and beyond",
-      ],
+      number: "01",
+      title: "Monetization Gameplan",
+      description: "Creator analysis, market opportunity, revenue projections",
+    },
+    {
+      number: "02",
+      title: "Personality DNA",
+      description: "Brand voice, credentials, communication style",
+    },
+    {
+      number: "03",
+      title: "Audience DNA",
+      description: "Ideal client psychology, pain points, desires",
+    },
+    {
+      number: "04",
+      title: "UVZ Analysis",
+      description: "20 unique value propositions, scored and ranked",
+    },
+    {
+      number: "05",
+      title: "Coaching Offer",
+      description: "5-week action plan, worksheets, program outline",
+    },
+    {
+      number: "06",
+      title: "Coaching Charter",
+      description: "Complete offer summary document",
+    },
+    {
+      number: "07",
+      title: "Product DNA",
+      description: "Problem-solution-offer framework, M.O.D.E.A analysis",
+    },
+    {
+      number: "08",
+      title: "14-Day Launch",
+      description: "14 individual daily playbooks with scripts",
     },
   ];
 
   const benefits = [
     {
       icon: Calendar,
-      title: "Day-by-Day Guidance",
-      description: "Clear, actionable tasks for each day of the 14-day program.",
+      title: "Daily Playbooks",
+      description: "Exact scripts, story structures, and DM strategies for each day.",
     },
     {
       icon: Users,
-      title: "Proven Framework",
-      description: "Battle-tested methodology used by hundreds of successful businesses.",
+      title: "Psychology-Based",
+      description: "Every day designed around proven psychological triggers.",
     },
     {
       icon: Rocket,
-      title: "Fast Results",
-      description: "Go from zero to launch-ready in just two weeks.",
+      title: "30-40% Last Day",
+      description: "More sales in final 2 hours than previous 4 days combined.",
     },
     {
       icon: BarChart3,
-      title: "Measurable Progress",
-      description: "Track your progress with built-in milestones and checkpoints.",
+      title: "Complete System",
+      description: "From DNA analysis to launch — everything builds sequentially.",
     },
   ];
 
@@ -113,23 +152,23 @@ export default function ShadowOperatorPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 mb-8">
-              <Calendar className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">14-Day Strategic Plan</span>
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-blue-700">Creator Monetization System</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
-              Your Complete
-              <span className="text-gradient"> Business Launch</span> Roadmap
+              14-Day Story
+              <span className="text-gradient"> Launch System</span>
             </h1>
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-              A comprehensive A-to-Z guide to launching your Shadow Operating business. 
-              Every day, every task, every milestone — all mapped out for success.
+              A psychological, story-based framework for selling digital products through Instagram Stories.
+              From warm-up to close cart — every day scripted for maximum conversions.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
                 <Lock className="w-5 h-5" />
-                Access Full Plan
+                Access Full System
               </Link>
               <Link href="/pricing" className="btn-secondary text-lg">
                 View Pricing
@@ -156,16 +195,41 @@ export default function ShadowOperatorPage() {
         </div>
       </section>
 
-      {/* 14-Day Plan Overview */}
+      {/* The Complete System */}
+      <section className="py-20 bg-slate-900 text-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              The Complete
+              <span className="text-blue-400"> 8-Phase</span> System
+            </h2>
+            <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              Each phase builds on the previous one. Sequential building ensures cohesion from analysis to launch.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {systemPhases.map((phase, index) => (
+              <div key={index} className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-colors">
+                <div className="text-4xl font-bold text-blue-400/30 mb-2">{phase.number}</div>
+                <h3 className="text-lg font-semibold mb-2">{phase.title}</h3>
+                <p className="text-white/60 text-sm">{phase.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 14-Day Launch Overview */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
               The
-              <span className="text-gradient"> 14-Day</span> Journey
+              <span className="text-gradient"> 14-Day</span> Launch
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Four strategic phases designed to take you from idea to launch-ready business.
+              Four psychological phases designed to warm up your audience, deliver value, and convert followers into buyers.
             </p>
           </div>
 
@@ -187,7 +251,7 @@ export default function ShadowOperatorPage() {
                   </div>
 
                   <div className="lg:col-span-2">
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
                       {phase.tasks.map((task, taskIndex) => (
                         <div key={taskIndex} className="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
                           <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -205,28 +269,28 @@ export default function ShadowOperatorPage() {
         </div>
       </section>
 
-      {/* What You'll Achieve */}
+      {/* Psychology Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-4xl font-bold text-slate-900 mb-6">
-                What You&apos;ll Achieve in
-                <span className="text-gradient"> 14 Days</span>
+                Built on
+                <span className="text-gradient"> Psychology</span>
               </h2>
               <p className="text-lg text-slate-600 mb-8">
-                By the end of this program, you&apos;ll have a fully operational Shadow Operating 
-                business with all the systems, strategies, and momentum needed for growth.
+                Every day is designed around proven psychological principles.
+                From commitment activation to loss aversion — the system leverages how people actually make decisions.
               </p>
 
               <ul className="space-y-4">
                 {[
-                  "A clear, differentiated market position",
-                  "Professional brand identity and messaging",
-                  "Active marketing channels generating leads",
-                  "Sales funnel converting visitors to customers",
-                  "Systems for sustainable growth",
-                  "Roadmap for scaling beyond launch",
+                  "Listening creates trust faster than talking",
+                  "Small public commitments lead to larger purchases",
+                  "Mental ownership precedes physical purchase",
+                  "Social proof from peers outweighs self-promotion 10:1",
+                  "Loss aversion is 2x more powerful than desire for gain",
+                  "Specificity (exact times) increases compliance",
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -241,18 +305,20 @@ export default function ShadowOperatorPage() {
               <div className="relative bg-slate-900 rounded-3xl p-8 text-white">
                 <div className="flex items-center gap-3 mb-6">
                   <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
-                  <span className="font-semibold">Success Story</span>
+                  <span className="font-semibold">Key Success Factor</span>
                 </div>
                 <blockquote className="text-lg mb-6 text-white/90 leading-relaxed">
-                  &quot;The 14-day plan gave me the structure I needed to finally launch my business. 
-                  Within a month, I had my first paying customers. The step-by-step approach 
-                  made everything feel achievable.&quot;
+                  &quot;30-40% of all sales happen in the last 2 hours of Day 14.
+                  More than the previous 4 days combined. The countdown creates
+                  real urgency that eliminates procrastination.&quot;
                 </blockquote>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-violet-400" />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <p className="font-semibold">Sarah M.</p>
-                    <p className="text-white/60 text-sm">Shadow Operating Business Owner</p>
+                    <p className="font-semibold">Day 14 Effect</p>
+                    <p className="text-white/60 text-sm">Last-minute buying psychology</p>
                   </div>
                 </div>
               </div>
@@ -261,15 +327,49 @@ export default function ShadowOperatorPage() {
         </div>
       </section>
 
+      {/* What You Get */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              What You Get
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Complete deliverables for every phase of the monetization system.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { icon: FileText, title: "Monetization Gameplan", desc: "Revenue projections & product ladder" },
+              { icon: Heart, title: "Personality DNA", desc: "Your brand voice & authority positioning" },
+              { icon: Users, title: "Audience DNA", desc: "Ideal client psychology & pain points" },
+              { icon: Target, title: "UVZ Analysis", desc: "20 unique value propositions ranked" },
+              { icon: Megaphone, title: "Coaching Offer", desc: "5-week plan, 10 worksheets, 5 modules" },
+              { icon: FileText, title: "Coaching Charter", desc: "Complete offer summary document" },
+              { icon: Lightbulb, title: "Product DNA", desc: "Problem-solution framework & M.O.D.E.A" },
+              { icon: Calendar, title: "14 Daily Playbooks", desc: "Scripts, story structures, DM strategies" },
+              { icon: BarChart3, title: "Tracking Templates", desc: "Hot leads list & conversion tracking" },
+            ].map((item, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 border border-slate-100">
+                <item.icon className="w-8 h-8 text-blue-600 mb-4" />
+                <h3 className="font-semibold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 bg-gradient-mesh">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Ready to Start Your Journey?
+            Ready to Launch?
           </h2>
           <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-            Get instant access to the complete 14-day strategic plan and start 
-            building your Shadow Operating business today.
+            Get the complete Creator Monetization System. From DNA analysis to
+            14-day launch playbooks — everything you need to monetize your following.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
@@ -281,7 +381,7 @@ export default function ShadowOperatorPage() {
             </Link>
           </div>
           <p className="mt-6 text-slate-500 text-sm">
-            $99/month · Cancel anytime · 7-day money-back guarantee
+            Complete system · Sequential building · Proven psychology
           </p>
         </div>
       </section>

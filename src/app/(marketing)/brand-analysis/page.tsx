@@ -1,109 +1,100 @@
 import Link from "next/link";
-import { 
-  ArrowRight, 
-  Lock, 
-  Search, 
-  Users, 
-  TrendingUp, 
-  BarChart3, 
-  Eye,
-  Layers,
+import {
+  ArrowRight,
+  Lock,
+  FileText,
+  Users,
+  Heart,
   Target,
-  Lightbulb,
+  MessageCircle,
+  Sparkles,
   CheckCircle2,
-  Crosshair
+  Download,
+  Lightbulb,
+  Star
 } from "lucide-react";
 
 export const metadata = {
-  title: "Brand Analysis Tools | Shadow Operator",
-  description: "Powerful brand analysis tools to understand your market, competitors, and opportunities. Make data-driven decisions for your business.",
+  title: "Brand Analysis | Personality DNA & Audience DNA Generator",
+  description: "Generate your Personality DNA and Audience DNA PDFs. Define your brand voice, credentials, and deeply understand your ideal customer psychology.",
 };
 
 export default function BrandAnalysisPage() {
-  const tools = [
+  const dnaTypes = [
     {
-      icon: Search,
-      title: "Competitor Analysis",
-      description: "Deep-dive into your competitors' strategies, strengths, and weaknesses to find your edge.",
-      features: [
-        "Competitor identification framework",
-        "Strengths & weaknesses mapping",
-        "Pricing comparison matrix",
-        "Marketing channel analysis",
+      icon: Heart,
+      title: "Personality DNA",
+      subtitle: "Your Brand Identity",
+      description: "Define your unique brand voice, credentials, and communication style that will be used across all content and offers.",
+      sections: [
+        {
+          title: "Brand Identity Core",
+          items: ["Brand archetype (Expert, Coach, Rebel, Friend...)", "Core values (3-5 principles)", "Mission statement formula"],
+        },
+        {
+          title: "Credentials & Authority",
+          items: ["Professional background & certifications", "Social proof & achievements", "Unique expertise & proprietary methods"],
+        },
+        {
+          title: "Communication Style",
+          items: ["Voice characteristics spectrum", "Language patterns & signature phrases", "Content personality & tone"],
+        },
+        {
+          title: "Content Pillars",
+          items: ["3-4 primary topic pillars", "Content mix ratio", "Differentiators & unique perspective"],
+        },
       ],
+      output: "4-6 page PDF",
+      color: "rose",
     },
     {
       icon: Users,
-      title: "Customer Persona Builder",
-      description: "Create detailed customer profiles to target your ideal audience with precision.",
-      features: [
-        "Demographic profiling",
-        "Psychographic analysis",
-        "Pain points identification",
-        "Buying behavior mapping",
+      title: "Audience DNA",
+      subtitle: "Your Ideal Customer",
+      description: "Deep psychological profile of your ideal customer that informs all messaging, content, and offer positioning.",
+      sections: [
+        {
+          title: "Demographic Profile",
+          items: ["Age, location, income, occupation", "Platform behavior & patterns", "Life stage & context"],
+        },
+        {
+          title: "Psychographic Profile",
+          items: ["Identity & self-perception", "Values & priorities", "Lifestyle & aspirations"],
+        },
+        {
+          title: "Pain Points Analysis",
+          items: ["Surface-level pain (what they say)", "Deep pain (what they feel)", "Emotional triggers framework"],
+        },
+        {
+          title: "Desires & Objections",
+          items: ["Immediate & ultimate desires", "Common objections with reframes", "Hidden fears to address"],
+        },
       ],
-    },
-    {
-      icon: Target,
-      title: "Market Positioning",
-      description: "Find your unique position in the market and craft messaging that resonates.",
-      features: [
-        "Position mapping canvas",
-        "Differentiation strategy",
-        "Value proposition design",
-        "Messaging framework",
-      ],
-    },
-    {
-      icon: Eye,
-      title: "Opportunity Finder",
-      description: "Identify untapped market opportunities and gaps you can capitalize on.",
-      features: [
-        "Market gap analysis",
-        "Trend identification",
-        "Blue ocean strategy",
-        "Growth opportunity scoring",
-      ],
-    },
-    {
-      icon: Layers,
-      title: "SWOT Analysis",
-      description: "Comprehensive analysis of your business's strengths, weaknesses, opportunities, and threats.",
-      features: [
-        "Internal strength audit",
-        "Weakness mitigation plans",
-        "Opportunity prioritization",
-        "Threat assessment matrix",
-      ],
-    },
-    {
-      icon: BarChart3,
-      title: "Performance Metrics",
-      description: "Track and measure your brand's performance against industry benchmarks.",
-      features: [
-        "KPI dashboard",
-        "Industry benchmarking",
-        "Progress tracking",
-        "ROI analysis tools",
-      ],
+      output: "6-8 page PDF",
+      color: "blue",
     },
   ];
 
-  const benefits = [
+  const workflow = [
     {
-      icon: Crosshair,
-      title: "Data-Driven Decisions",
-      description: "Make strategic choices backed by solid research and analysis.",
+      step: "01",
+      title: "Fill Out Form",
+      description: "Answer guided questions about yourself and your ideal customer.",
     },
     {
-      icon: TrendingUp,
-      title: "Competitive Advantage",
-      description: "Stay ahead of competitors with deep market insights.",
+      step: "02",
+      title: "AI Processing",
+      description: "Our system analyzes your inputs and generates comprehensive DNA profiles.",
     },
     {
-      icon: Lightbulb,
-      title: "Clear Direction",
-      description: "Know exactly where to focus your resources for maximum impact.",
+      step: "03",
+      title: "Download PDFs",
+      description: "Get your Personality DNA and Audience DNA as beautifully designed PDFs.",
+    },
+    {
+      step: "04",
+      title: "Use in Launch",
+      description: "Apply your DNA profiles in the 14-Day Story Launch System.",
     },
   ];
 
@@ -114,81 +105,80 @@ export default function BrandAnalysisPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-50 border border-violet-100 mb-8">
-              <BarChart3 className="w-4 h-4 text-violet-600" />
-              <span className="text-sm font-medium text-violet-700">Brand Analysis Suite</span>
+              <Sparkles className="w-4 h-4 text-violet-600" />
+              <span className="text-sm font-medium text-violet-700">Brand Analysis Tool</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
-              Understand Your
-              <span className="text-gradient"> Market</span> Deeply
+              Generate Your
+              <span className="text-gradient"> DNA Profiles</span>
             </h1>
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-              Powerful analysis tools to research your market, understand competitors, 
-              and identify opportunities for your Shadow Operating business.
+              Create your <strong>Personality DNA</strong> and <strong>Audience DNA</strong> documents.
+              The foundation for all your content, offers, and the 14-Day Launch.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
                 <Lock className="w-5 h-5" />
-                Access Analysis Tools
+                Start Generating
               </Link>
-              <Link href="/pricing" className="btn-secondary text-lg">
-                View Pricing
+              <Link href="/shadow-operator" className="btn-secondary text-lg">
+                View 14-Day Plan
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Benefits Strip */}
-      <section className="py-12 bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                  <benefit.icon className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">{benefit.title}</h3>
-                  <p className="text-white/60 text-sm">{benefit.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Tools Grid */}
+      {/* Two DNA Types */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              Comprehensive
-              <span className="text-gradient"> Analysis Tools</span>
+              Two Essential
+              <span className="text-gradient"> DNA Documents</span>
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Everything you need to understand your market and make informed strategic decisions.
+              Everything in the Creator Monetization System builds on these two foundational documents.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tools.map((tool, index) => (
-              <div key={index} className="feature-card group">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <tool.icon className="w-6 h-6 text-white" />
+          <div className="grid lg:grid-cols-2 gap-8">
+            {dnaTypes.map((dna, index) => (
+              <div key={index} className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className={`w-14 h-14 rounded-2xl bg-${dna.color}-100 flex items-center justify-center`}>
+                    <dna.icon className={`w-7 h-7 text-${dna.color}-600`} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900">{dna.title}</h3>
+                    <p className="text-slate-500">{dna.subtitle}</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{tool.title}</h3>
-                <p className="text-slate-600 mb-6">{tool.description}</p>
-                
-                <ul className="space-y-2">
-                  {tool.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-2 text-sm">
-                      <Lock className="w-3 h-3 text-slate-400" />
-                      <span className="text-slate-600">{feature}</span>
-                    </li>
+
+                <p className="text-slate-600 mb-6">{dna.description}</p>
+
+                <div className="space-y-4 mb-6">
+                  {dna.sections.map((section, sIndex) => (
+                    <div key={sIndex} className="bg-white rounded-xl p-4">
+                      <h4 className="font-semibold text-slate-900 mb-2">{section.title}</h4>
+                      <ul className="space-y-1">
+                        {section.items.map((item, iIndex) => (
+                          <li key={iIndex} className="flex items-start gap-2 text-sm text-slate-600">
+                            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm font-medium text-slate-700 bg-white rounded-lg px-4 py-3">
+                  <Download className="w-4 h-4" />
+                  Output: {dna.output}
+                </div>
               </div>
             ))}
           </div>
@@ -196,47 +186,26 @@ export default function BrandAnalysisPage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-slate-50">
+      <section className="py-20 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">
-              How Brand Analysis
-              <span className="text-gradient"> Works</span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              How It
+              <span className="text-blue-400"> Works</span>
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Our structured approach helps you gather insights and make strategic decisions.
+            <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              Simple 4-step process to generate your DNA profiles.
             </p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Research",
-                description: "Gather data about your market, competitors, and target audience.",
-              },
-              {
-                step: "02",
-                title: "Analyze",
-                description: "Use our frameworks to identify patterns, opportunities, and threats.",
-              },
-              {
-                step: "03",
-                title: "Strategize",
-                description: "Develop actionable strategies based on your analysis insights.",
-              },
-              {
-                step: "04",
-                title: "Execute",
-                description: "Implement your strategies with confidence and track results.",
-              },
-            ].map((item, index) => (
+            {workflow.map((step, index) => (
               <div key={index} className="relative">
-                <div className="text-6xl font-bold text-slate-100 mb-4">{item.step}</div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">{item.title}</h3>
-                <p className="text-slate-600 text-sm">{item.description}</p>
+                <div className="text-6xl font-bold text-white/10 mb-4">{step.step}</div>
+                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                <p className="text-white/60 text-sm">{step.description}</p>
                 {index < 3 && (
-                  <div className="hidden md:block absolute top-8 right-0 w-8 h-0.5 bg-slate-200" />
+                  <div className="hidden md:block absolute top-8 right-0 w-8 h-0.5 bg-white/20" />
                 )}
               </div>
             ))}
@@ -244,55 +213,134 @@ export default function BrandAnalysisPage() {
         </div>
       </section>
 
-      {/* Integration with 14-Day Plan */}
+      {/* Why DNA Matters */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="order-2 lg:order-1">
-              <div className="bg-gradient-mesh rounded-3xl p-8">
-                <div className="space-y-4">
-                  {[
-                    { day: "Day 1-2", task: "Competitor Analysis", status: "Complete market research" },
-                    { day: "Day 3", task: "Customer Personas", status: "Define target audience" },
-                    { day: "Day 4-5", task: "Positioning", status: "Find your market position" },
-                    { day: "Day 6-7", task: "SWOT Analysis", status: "Assess opportunities" },
-                  ].map((item, index) => (
-                    <div key={index} className="bg-white rounded-xl p-4 flex items-center gap-4 shadow-sm">
-                      <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle2 className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-blue-600">{item.day}</span>
-                          <span className="text-xs text-slate-400">{item.status}</span>
-                        </div>
-                        <p className="font-semibold text-slate-900">{item.task}</p>
-                      </div>
-                    </div>
-                  ))}
+            <div>
+              <h2 className="text-4xl font-bold text-slate-900 mb-6">
+                Why DNA Documents
+                <span className="text-gradient"> Matter</span>
+              </h2>
+              <p className="text-lg text-slate-600 mb-8">
+                Without clear Personality and Audience DNA, your content feels generic,
+                your offers miss the mark, and your launch falls flat. These documents
+                ensure every word you write resonates.
+              </p>
+
+              <ul className="space-y-4">
+                {[
+                  "Content sounds like YOU, not generic advice",
+                  "Sales copy hits real pain points and desires",
+                  "Objections handled before they arise",
+                  "14-Day Launch scripts feel authentic",
+                  "DMs connect on a deeper level",
+                  "Offers positioned perfectly for your audience",
+                ].map((item, index) => (
+                  <li key={index} className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <span className="text-slate-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-blue-500 rounded-3xl blur-3xl opacity-20" />
+              <div className="relative bg-slate-900 rounded-3xl p-8 text-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <Star className="w-6 h-6 text-amber-400 fill-amber-400" />
+                  <span className="font-semibold">Sequential Building</span>
+                </div>
+                <blockquote className="text-lg mb-6 text-white/90 leading-relaxed">
+                  &quot;The 14-Day Story Launch System REQUIRES both Personality DNA
+                  and Audience DNA. Without them, the scripts lack cohesion and
+                  authenticity. Build the foundation first.&quot;
+                </blockquote>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-blue-400 flex items-center justify-center">
+                    <Target className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">Required for Launch</p>
+                    <p className="text-white/60 text-sm">Foundation of the system</p>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="order-1 lg:order-2">
-              <h2 className="text-4xl font-bold text-slate-900 mb-6">
-                Integrated with Your
-                <span className="text-gradient"> 14-Day Plan</span>
-              </h2>
-              <p className="text-lg text-slate-600 mb-6">
-                Brand Analysis isn&apos;t a separate tool — it&apos;s woven directly into your 
-                14-day strategic plan. The first week focuses heavily on research and 
-                analysis to ensure your business is built on solid foundations.
-              </p>
-              <p className="text-slate-600 mb-8">
-                Each analysis framework connects to specific action items in your plan, 
-                so you&apos;re never just gathering data — you&apos;re building something real.
-              </p>
+      {/* Sample Questions */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">
+              Questions We&apos;ll Ask
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Get a preview of the inputs needed to generate your DNA profiles.
+            </p>
+          </div>
 
-              <Link href="/shadow-operator" className="btn-primary inline-flex items-center gap-2">
-                View the 14-Day Plan
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl p-6 border border-slate-100">
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="w-6 h-6 text-rose-500" />
+                <h3 className="text-lg font-semibold">Personality DNA Questions</h3>
+              </div>
+              <ul className="space-y-3 text-slate-600 text-sm">
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What&apos;s your brand archetype? (Expert, Coach, Rebel, Friend...)
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What are your 3-5 core values?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What certifications/experience do you have?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  How would you describe your communication style?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What makes you different from others in your niche?
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 border border-slate-100">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-6 h-6 text-blue-500" />
+                <h3 className="text-lg font-semibold">Audience DNA Questions</h3>
+              </div>
+              <ul className="space-y-3 text-slate-600 text-sm">
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  Who is your ideal customer? (age, occupation, life stage)
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What problems do they SAY they have?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What do they really FEEL deep down?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What transformation do they desire?
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageCircle className="w-4 h-4 text-slate-400 mt-0.5" />
+                  What objections stop them from buying?
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -302,23 +350,23 @@ export default function BrandAnalysisPage() {
       <section className="py-20 bg-gradient-mesh">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Start Analyzing Your Market
+            Ready to Build Your Foundation?
           </h2>
           <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-            Get access to all brand analysis tools and the complete 14-day strategic plan 
-            with a single subscription.
+            Generate your Personality DNA and Audience DNA documents.
+            The essential first step before your 14-Day Launch.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/login" className="btn-primary text-lg flex items-center gap-2">
-              Get Started
+              Generate DNA Profiles
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/contact" className="btn-secondary text-lg">
-              Have Questions?
+            <Link href="/shadow-operator" className="btn-secondary text-lg">
+              View 14-Day Plan
             </Link>
           </div>
           <p className="mt-6 text-slate-500 text-sm">
-            $99/month · Cancel anytime · 7-day money-back guarantee
+            Personality DNA + Audience DNA · Required for 14-Day Launch
           </p>
         </div>
       </section>
