@@ -31,9 +31,14 @@ export async function POST(request: NextRequest) {
       primaryPainPoints,
       coreDesires,
       specificTransformation,
+      language,
     } = data;
 
-    const prompt = `You are an expert positioning strategist. Generate a comprehensive UVZ (Unique Value Zone) Analysis that creates 20 unique positioning statements and selects the top options for offer development.
+    const languageInstruction = language && language !== "en"
+      ? `\n\n**IMPORTANT: Generate ALL content in ${language === "bs" ? "Bosnian" : language === "hr" ? "Croatian" : language === "sr" ? "Serbian" : language === "de" ? "German" : language === "es" ? "Spanish" : language === "fr" ? "French" : language === "it" ? "Italian" : language === "pt" ? "Portuguese" : language === "nl" ? "Dutch" : language === "pl" ? "Polish" : language === "tr" ? "Turkish" : language === "ru" ? "Russian" : language === "ar" ? "Arabic" : "the specified language"}. The entire document must be written in this language, including all headers, descriptions, and examples.**\n`
+      : "";
+
+    const prompt = `You are an expert positioning strategist. Generate a comprehensive UVZ (Unique Value Zone) Analysis that creates 20 unique positioning statements and selects the top options for offer development.${languageInstruction}
 
 ## THE UVZ FORMULA
 \`\`\`

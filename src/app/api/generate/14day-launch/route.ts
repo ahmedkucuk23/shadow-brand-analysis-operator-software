@@ -40,9 +40,14 @@ export async function POST(request: NextRequest) {
       transformation,
       mechanism,
       socialProof,
+      language,
     } = data;
 
-    const prompt = `You are an expert launch strategist. Generate a comprehensive 14-Day Instagram Story Launch System. This is a psychological, story-based launch framework for selling digital products through Instagram Stories.
+    const languageInstruction = language && language !== "en"
+      ? `\n\n**IMPORTANT: Generate ALL content in ${language === "bs" ? "Bosnian" : language === "hr" ? "Croatian" : language === "sr" ? "Serbian" : language === "de" ? "German" : language === "es" ? "Spanish" : language === "fr" ? "French" : language === "it" ? "Italian" : language === "pt" ? "Portuguese" : language === "nl" ? "Dutch" : language === "pl" ? "Polish" : language === "tr" ? "Turkish" : language === "ru" ? "Russian" : language === "ar" ? "Arabic" : "the specified language"}. The entire document must be written in this language, including all headers, story scripts, DM templates, and examples. This is especially important for the Instagram Story scripts which should be native and natural in the target language.**\n`
+      : "";
+
+    const prompt = `You are an expert launch strategist. Generate a comprehensive 14-Day Instagram Story Launch System. This is a psychological, story-based launch framework for selling digital products through Instagram Stories.${languageInstruction}
 
 ## INPUT DATA:
 

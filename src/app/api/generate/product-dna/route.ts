@@ -41,9 +41,14 @@ export async function POST(request: NextRequest) {
       pricing,
       deliverables,
       guarantee,
+      language,
     } = data;
 
-    const prompt = `You are an expert product strategist. Generate a comprehensive Product DNA document - the master reference for all marketing, sales, and launch materials. This document serves as the foundation for the 14-Day Launch System.
+    const languageInstruction = language && language !== "en"
+      ? `\n\n**IMPORTANT: Generate ALL content in ${language === "bs" ? "Bosnian" : language === "hr" ? "Croatian" : language === "sr" ? "Serbian" : language === "de" ? "German" : language === "es" ? "Spanish" : language === "fr" ? "French" : language === "it" ? "Italian" : language === "pt" ? "Portuguese" : language === "nl" ? "Dutch" : language === "pl" ? "Polish" : language === "tr" ? "Turkish" : language === "ru" ? "Russian" : language === "ar" ? "Arabic" : "the specified language"}. The entire document must be written in this language, including all headers, descriptions, and examples.**\n`
+      : "";
+
+    const prompt = `You are an expert product strategist. Generate a comprehensive Product DNA document - the master reference for all marketing, sales, and launch materials. This document serves as the foundation for the 14-Day Launch System.${languageInstruction}
 
 ## INPUT DATA:
 

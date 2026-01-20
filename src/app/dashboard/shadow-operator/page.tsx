@@ -20,7 +20,26 @@ import {
   BookOpen,
   Calendar,
   Rocket,
+  Globe,
 } from "lucide-react";
+
+// Supported languages
+const LANGUAGES = [
+  { code: "en", name: "English", flag: "🇬🇧" },
+  { code: "bs", name: "Bosnian", flag: "🇧🇦" },
+  { code: "hr", name: "Croatian", flag: "🇭🇷" },
+  { code: "sr", name: "Serbian", flag: "🇷🇸" },
+  { code: "de", name: "German", flag: "🇩🇪" },
+  { code: "es", name: "Spanish", flag: "🇪🇸" },
+  { code: "fr", name: "French", flag: "🇫🇷" },
+  { code: "it", name: "Italian", flag: "🇮🇹" },
+  { code: "pt", name: "Portuguese", flag: "🇵🇹" },
+  { code: "nl", name: "Dutch", flag: "🇳🇱" },
+  { code: "pl", name: "Polish", flag: "🇵🇱" },
+  { code: "tr", name: "Turkish", flag: "🇹🇷" },
+  { code: "ru", name: "Russian", flag: "🇷🇺" },
+  { code: "ar", name: "Arabic", flag: "🇸🇦" },
+];
 
 // Types for all documents
 interface MonetizationGameplan {
@@ -129,6 +148,7 @@ interface Launch14Day {
 
 interface WizardState {
   currentStep: number;
+  language: string;
   monetizationGameplan: MonetizationGameplan;
   personalityDNA: PersonalityDNA;
   audienceDNA: AudienceDNA;
@@ -154,6 +174,7 @@ const STORAGE_KEY = "shadow-operator-wizard-state";
 
 const initialState: WizardState = {
   currentStep: 1,
+  language: "en",
   monetizationGameplan: {
     creatorName: "",
     handle: "",
@@ -358,6 +379,21 @@ export default function ShadowOperatorWizard() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Language Selector */}
+          <div className="relative">
+            <select
+              value={state.language}
+              onChange={(e) => updateState({ language: e.target.value })}
+              className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2.5 pr-10 text-sm font-medium text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.name}
+                </option>
+              ))}
+            </select>
+            <Globe className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+          </div>
           <button
             onClick={handleReset}
             className="px-4 py-2 text-sm text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -464,6 +500,7 @@ export default function ShadowOperatorWizard() {
           updateState={updateState}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={state.language}
         />
       </div>
 
@@ -502,12 +539,14 @@ function StepContent({
   updateState,
   isLoading,
   setIsLoading,
+  language,
 }: {
   step: number;
   state: WizardState;
   updateState: (updates: Partial<WizardState>) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   switch (step) {
     case 1:
@@ -517,6 +556,7 @@ function StepContent({
           updateData={(data) => updateState({ monetizationGameplan: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 2:
@@ -526,6 +566,7 @@ function StepContent({
           updateData={(data) => updateState({ personalityDNA: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 3:
@@ -535,6 +576,7 @@ function StepContent({
           updateData={(data) => updateState({ audienceDNA: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 4:
@@ -546,6 +588,7 @@ function StepContent({
           updateData={(data) => updateState({ uvzAnalysis: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 5:
@@ -558,6 +601,7 @@ function StepContent({
           updateData={(data) => updateState({ coachingOffer: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 6:
@@ -568,6 +612,7 @@ function StepContent({
           updateData={(data) => updateState({ coachingCharter: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 7:
@@ -581,6 +626,7 @@ function StepContent({
           updateData={(data) => updateState({ productDNA: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     case 8:
@@ -593,6 +639,7 @@ function StepContent({
           updateData={(data) => updateState({ launch14Day: data })}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          language={language}
         />
       );
     default:
@@ -608,11 +655,13 @@ function MonetizationGameplanStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: MonetizationGameplan;
   updateData: (data: MonetizationGameplan) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -620,7 +669,7 @@ function MonetizationGameplanStep({
       const response = await fetch("/api/generate/monetization-gameplan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, language }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Failed to generate");
@@ -725,11 +774,13 @@ function PersonalityDNAStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: PersonalityDNA;
   updateData: (data: PersonalityDNA) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const archetypes = [
     "The Expert",
@@ -746,7 +797,7 @@ function PersonalityDNAStep({
       const response = await fetch("/api/generate/personality-dna", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, language }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Failed to generate");
@@ -971,11 +1022,13 @@ function AudienceDNAStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: AudienceDNA;
   updateData: (data: AudienceDNA) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -983,7 +1036,7 @@ function AudienceDNAStep({
       const response = await fetch("/api/generate/audience-dna", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, language }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Failed to generate");
@@ -1275,6 +1328,7 @@ function UVZAnalysisStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: UVZAnalysis;
   personalityDNA: PersonalityDNA;
@@ -1282,6 +1336,7 @@ function UVZAnalysisStep({
   updateData: (data: UVZAnalysis) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -1292,6 +1347,7 @@ function UVZAnalysisStep({
         body: JSON.stringify({
           personalityDNA: personalityDNA.content,
           audienceDNA: audienceDNA.content,
+          language,
         }),
       });
       const result = await response.json();
@@ -1378,6 +1434,7 @@ function CoachingOfferStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: CoachingOffer;
   uvzAnalysis: UVZAnalysis;
@@ -1386,6 +1443,7 @@ function CoachingOfferStep({
   updateData: (data: CoachingOffer) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -1403,6 +1461,7 @@ function CoachingOfferStep({
           pricingStarter: data.pricingStarter,
           pricingComplete: data.pricingComplete,
           pricingVIP: data.pricingVIP,
+          language,
         }),
       });
       const result = await response.json();
@@ -1509,12 +1568,14 @@ function CoachingCharterStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: CoachingCharter;
   coachingOffer: CoachingOffer;
   updateData: (data: CoachingCharter) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -1524,6 +1585,7 @@ function CoachingCharterStep({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           coachingOffer: coachingOffer.content,
+          language,
         }),
       });
       const result = await response.json();
@@ -1602,6 +1664,7 @@ function ProductDNAStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: ProductDNA;
   coachingCharter: CoachingCharter;
@@ -1611,6 +1674,7 @@ function ProductDNAStep({
   updateData: (data: ProductDNA) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -1623,6 +1687,7 @@ function ProductDNAStep({
           coachingOffer: coachingOffer.content,
           audienceDNA: audienceDNA.content,
           personalityDNA: personalityDNA.content,
+          language,
         }),
       });
       const result = await response.json();
@@ -1716,6 +1781,7 @@ function Launch14DayStep({
   updateData,
   isLoading,
   setIsLoading,
+  language,
 }: {
   data: Launch14Day;
   productDNA: ProductDNA;
@@ -1724,6 +1790,7 @@ function Launch14DayStep({
   updateData: (data: Launch14Day) => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
+  language: string;
 }) {
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -1738,6 +1805,7 @@ function Launch14DayStep({
           launchTime: data.launchTime,
           closeTime: data.closeTime,
           timezone: data.timezone,
+          language,
         }),
       });
       const result = await response.json();
