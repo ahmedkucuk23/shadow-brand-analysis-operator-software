@@ -1,96 +1,99 @@
-# Mita Agency Website
+# Shadow Operator
 
-A modern marketing agency website built with Next.js, Prisma, and PostgreSQL.
+Strategic Business Planning & Brand Analysis Software
+
+## Overview
+
+Shadow Operator is a comprehensive software platform designed to help entrepreneurs and business owners launch and grow their Shadow Operating businesses. The platform provides:
+
+- **14-Day Strategic Plan**: A complete A-to-Z roadmap for launching your business, with daily tasks, milestones, and resources.
+- **Brand Analysis Tools**: Powerful tools for market research, competitor analysis, customer personas, positioning, and more.
 
 ## Features
 
-- **CMS Dashboard**: Manage content for team members, services, portfolio projects, blog posts, and contact submissions
-- **NextAuth Authentication**: Secure admin access with Google OAuth
-- **Prisma ORM**: Type-safe database access with PostgreSQL
-- **Responsive Design**: Mobile-first design with Tailwind CSS
-- **Content Types**:
-  - Team Members
-  - Services
-  - Portfolio Projects
-  - Blog Posts
-  - Contact Submissions
+### Public Pages
+- **Homepage**: Showcase of features, benefits, and pricing
+- **Shadow Operator**: Overview of the 14-day strategic plan
+- **Brand Analysis**: Overview of market research tools
+- **Pricing**: $99/month subscription with full access
+- **Contact**: Get in touch form
+
+### Dashboard (Protected)
+- **Overview**: Progress tracking and quick actions
+- **Shadow Operator**: Interactive 14-day plan with task tracking
+- **Brand Analysis**: Suite of analysis tools including:
+  - Competitor Analysis
+  - Customer Personas
+  - Market Positioning
+  - Opportunity Finder
+  - SWOT Analysis
+  - Performance Metrics
+
+## Tech Stack
+
+- **Framework**: Next.js 16 with App Router
+- **Styling**: Tailwind CSS
+- **Authentication**: NextAuth.js with Google provider
+- **Database**: SQLite with Prisma ORM
+- **Icons**: Lucide React
 
 ## Getting Started
 
-1. **Install Dependencies**
+1. Clone the repository
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. **Set Up Database**
-   - Create a PostgreSQL database
-   - Copy `.env.example` to `.env`
-   - Update `DATABASE_URL` with your database connection string
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Add your credentials:
+   ```
+   AUTH_SECRET=your-secret-key
+   AUTH_GOOGLE_ID=your-google-client-id
+   AUTH_GOOGLE_SECRET=your-google-client-secret
+   ```
 
-3. **Configure Authentication**
-   - Get Google OAuth credentials from [Google Cloud Console](https://console.cloud.google.com/)
-   - Add `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` to `.env`
-   - Generate a secret for `AUTH_SECRET` (you can use `openssl rand -base64 32`)
-
-4. **Initialize Database**
+4. Set up the database:
    ```bash
    npm run db:push
    ```
 
-5. **Run Development Server**
+5. Run the development server:
    ```bash
    npm run dev
    ```
 
-6. **Access the Site**
-   - Website: http://localhost:3000
-   - Dashboard: http://localhost:3000/dashboard
+6. Open [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure
 
 ```
 src/
 ├── app/
-│   ├── (public pages)
-│   │   ├── services/
-│   │   ├── portfolio/
-│   │   ├── blog/
-│   │   ├── team/
-│   │   └── contact/
-│   ├── dashboard/       # CMS admin panel
-│   └── api/            # API routes
-├── lib/                # Utilities and database client
-└── components/         # Reusable components
-
-prisma/
-└── schema.prisma      # Database schema
+│   ├── api/auth/         # NextAuth API routes
+│   ├── brand-analysis/   # Brand analysis public page
+│   ├── contact/          # Contact page
+│   ├── dashboard/        # Protected dashboard area
+│   │   ├── brand-analysis/
+│   │   └── shadow-operator/
+│   ├── pricing/          # Pricing page
+│   ├── shadow-operator/  # Shadow Operator public page
+│   ├── globals.css       # Global styles
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Homepage
+├── components/
+│   ├── Header.tsx        # Navigation header
+│   └── Footer.tsx        # Site footer
+├── lib/
+│   ├── db.ts             # Prisma client
+│   └── utils.ts          # Utility functions
+├── auth.ts               # NextAuth configuration
+└── auth.config.ts        # Auth providers config
 ```
-
-## Database Schema
-
-- **User**: Admin users with NextAuth
-- **TeamMember**: Agency team members
-- **Service**: Services offered
-- **Project**: Portfolio projects
-- **BlogPost**: Blog articles
-- **ContactSubmission**: Contact form submissions
-
-## Scripts
-
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run start`: Start production server
-- `npm run db:studio`: Open Prisma Studio
-- `npm run db:push`: Push schema changes to database
-
-## Tech Stack
-
-- **Framework**: Next.js 16
-- **Database**: PostgreSQL with Prisma
-- **Authentication**: NextAuth v5
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
-- **TypeScript**: Full type safety
 
 ## License
 

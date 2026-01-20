@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Mita Agency - Marketing Agency",
-  description: "Professional marketing agency delivering results-driven campaigns and creative solutions.",
+  title: "Shadow Operator | Strategic Business Planning & Brand Analysis",
+  description: "Transform your business with our comprehensive 14-day strategic planning and in-depth brand analysis tools. Start your journey to success today.",
 };
 
 export default function RootLayout({
@@ -16,7 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="min-h-screen">
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

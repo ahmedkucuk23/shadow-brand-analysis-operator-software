@@ -1,5 +1,5 @@
 {
-  "name": "mita-agency",
+  "name": "shadow-operator",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Mita Agency - Marketing Agency Website with CMS",
+  "description": "Shadow Operator - Strategic Business Planning & Brand Analysis Software",
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@hookform/resolvers": "^5.2.2",
