@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
 ---
 
-## GENERATE THE FOLLOWING SECTIONS:
+## GENERATE THE FOLLOWING 6 SECTIONS:
 
 ### 1. CREATOR OVERVIEW
 - Profile summary and analysis
@@ -116,78 +116,57 @@ export async function POST(request: NextRequest) {
 - Annual revenue potential
 - Lifetime customer value estimation
 
-### 4. PRODUCT SUGGESTIONS (3 Tiers)
+### 4. PRODUCT SUGGESTIONS
 
-**TIER 1: ENTRY PRODUCT (Low price, high volume)**
-- Suggested Name & Tagline
-- Format: Digital download
-- Price Point: $X-$X
-- Purpose in funnel: Lead magnet / entry point
-- What's Included: (5-7 items)
-- Psychological Positioning: Why they'll buy this
+**Product 1: ENTRY PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** Digital download (eBook/Guide/Templates)
+- **Price:** $X-$X
+- **What's Included:** (5-7 items)
 
-**TIER 2: CORE PRODUCT (Mid price, relationships)**
-- Suggested Name & Tagline
-- Format: Group coaching/course
-- Price Point: $X-$X
-- Purpose in funnel: Main revenue driver
-- What's Included: (7-10 items)
-- Psychological Positioning: Why they'll upgrade
+**Product 2: CORE PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** Group coaching/Online course
+- **Price:** $X-$X
+- **What's Included:** (7-10 items)
 
-**TIER 3: PREMIUM PRODUCT (High price, transformation)**
-- Suggested Name & Tagline
-- Format: 1:1 coaching/VIP
-- Price Point: $X-$X
-- Purpose in funnel: High-touch, high-value
-- What's Included: (5-7 premium items)
-- Psychological Positioning: Why they'll invest
+**Product 3: PREMIUM PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** 1:1 coaching/VIP experience
+- **Price:** $X-$X
+- **What's Included:** (5-7 premium items)
 
-### 5. IMPLEMENTATION PLAN (14-Day Overview)
+### 5. IMPLEMENTATION PLAN (14-Day Strategy)
 
-\`\`\`
-┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐
-│   PHASE 1       │   │   PHASE 2       │   │   PHASE 3       │
-│   WARM UP       │   │   VALUE         │   │   OPEN CART     │
-│   (Days 1-3)    │   │   (Days 4-9)    │   │   (Days 10-14)  │
-│                 │   │                 │   │                 │
-│ • Survey        │   │ • Free value    │   │ • Launch        │
-│ • Build trust   │   │ • Framework     │   │ • Social proof  │
-│ • Create buzz   │   │ • Ownership     │   │ • Urgency       │
-└─────────────────┘   └─────────────────┘   └─────────────────┘
-\`\`\`
+*If you decide to move forward, we will use this launch structure via Stories:*
 
-**Phase Summaries:**
-- Phase 1: What to focus on
-- Phase 2: What to deliver
-- Phase 3: How to close
+| 01 | 02 | 03 |
+|---|---|---|
+| **Phase 1: Warm-Up (Days 1-3)** | **Phase 2: Value Delivery (Days 4-9)** | **Phase 3: Open Cart (Days 10-14)** |
+| Post Stories highlighting the most common concerns you see. Share real questions (anonymized) and tease that you're working on something to help. No selling, just building anticipation. | Drop mini-lessons on key topics. Break objections by showing quick wins they can implement immediately. Build trust by giving away genuinely useful content. | Launch with a clear offer, limited-time pricing, and genuine urgency. Use testimonials from people you've helped and show the transformation: from their current state to their desired outcome. |
 
-### 6. VALIDATION TEST (Carousel Content)
-**Purpose:** Test demand before creating full product
+### 6. IMMEDIATE VALIDATION (Test Carousel)
 
-**3-Slide Validation Carousel:**
+**Purpose:** Test demand before creating the full product. Post these 3 Stories to gauge interest.
 
-**Slide 1 (Hook):**
-[Identify the pain point - exact text]
+**Story 1 - The Hook (Pain Point):**
+> "[Exact text for a story that calls out the main struggle your audience faces - make it relatable and specific]"
 
-**Slide 2 (Agitation):**
-[Deepen emotional connection - exact text]
+**Story 2 - The Agitation (Deeper Problem):**
+> "[Exact text that deepens the emotional connection - what happens if they don't solve this? What have they tried that didn't work?]"
 
-**Slide 3 (Solution + CTA):**
-[Offer value and request action - exact text]
+**Story 3 - The Solution + CTA:**
+> "[Exact text introducing that you're working on something to help + a clear call-to-action like 'DM me X if you want early access']"
 
-**Success Metrics:**
-- 50+ comments = Confirmed demand → Launch immediately
-- 20-50 comments = Moderate demand → More warm-up needed
-- <20 comments = Weak demand → Revisit positioning
+**How to Measure Success:**
+- **50+ DMs/replies** = Strong demand - proceed with full launch
+- **20-50 DMs/replies** = Moderate interest - do more warm-up content
+- **<20 DMs/replies** = Weak signal - revisit positioning or audience fit
 
-### 7. IMMEDIATE NEXT STEPS
-1. [First action to take]
-2. [Second action]
-3. [Third action]
-4. [Fourth action]
-5. [Fifth action]
-
-Output in clean markdown format with clear headers, tables, and visual elements where appropriate.`;
+Output in clean markdown format with clear headers and tables.`;
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-20250514",

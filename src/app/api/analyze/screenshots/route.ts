@@ -107,7 +107,7 @@ EXTRACT AND ANALYZE:
 
 After extracting all data, generate a COMPLETE MONETIZATION GAMEPLAN based on what you found.${languageInstruction}
 
-## GENERATE THE FOLLOWING SECTIONS:
+## GENERATE THE FOLLOWING 6 SECTIONS:
 
 ### 1. CREATOR OVERVIEW
 - Profile summary based on extracted data
@@ -130,6 +130,9 @@ After extracting all data, generate a COMPLETE MONETIZATION GAMEPLAN based on wh
            (Accessible, specialized, supported)
 \`\`\`
 
+- Where competitors are falling short
+- The unmet need in this niche
+
 ### 3. THE NUMBERS (Audience Value Projection)
 **Conversion Funnel Projection:**
 Based on the metrics extracted, project:
@@ -141,29 +144,59 @@ Based on the metrics extracted, project:
 **Revenue Projections by Product Tier:**
 | Product Type | Price Point | Expected Buyers | Projected Revenue |
 |--------------|-------------|-----------------|-------------------|
+| Digital Product (Entry) | $ | X | $ |
+| Group Program (Core) | $ | X | $ |
+| VIP/1:1 (Premium) | $ | X | $ |
 
-### 4. PRODUCT SUGGESTIONS (3 Tiers)
+### 4. PRODUCT SUGGESTIONS
 
-**TIER 1: ENTRY PRODUCT** (Low price, high volume)
-- Suggested Name & Tagline
-- Format, Price Point, What's Included
+**Product 1: ENTRY PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** Digital download (eBook/Guide/Templates)
+- **Price:** $X-$X
+- **What's Included:** (5-7 items)
 
-**TIER 2: CORE PRODUCT** (Mid price, relationships)
-- Suggested Name & Tagline
-- Format, Price Point, What's Included
+**Product 2: CORE PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** Group coaching/Online course
+- **Price:** $X-$X
+- **What's Included:** (7-10 items)
 
-**TIER 3: PREMIUM PRODUCT** (High price, transformation)
-- Suggested Name & Tagline
-- Format, Price Point, What's Included
+**Product 3: PREMIUM PRODUCT**
+- **Name:** [Creative product name]
+- **Tagline:** [One-liner value prop]
+- **Format:** 1:1 coaching/VIP experience
+- **Price:** $X-$X
+- **What's Included:** (5-7 premium items)
 
-### 5. IMPLEMENTATION PLAN (14-Day Overview)
-Quick overview of the launch phases
+### 5. IMPLEMENTATION PLAN (14-Day Strategy)
 
-### 6. VALIDATION TEST (Carousel Content)
-3-slide validation carousel to test demand
+*If you decide to move forward, we will use this launch structure via Stories:*
 
-### 7. IMMEDIATE NEXT STEPS
-5 actionable steps to take now
+| 01 | 02 | 03 |
+|---|---|---|
+| **Phase 1: Warm-Up (Days 1-3)** | **Phase 2: Value Delivery (Days 4-9)** | **Phase 3: Open Cart (Days 10-14)** |
+| Post Stories highlighting the most common concerns you see. Share real questions (anonymized) and tease that you're working on something to help. No selling, just building anticipation. | Drop mini-lessons on key topics. Break objections by showing quick wins they can implement immediately. Build trust by giving away genuinely useful content. | Launch with a clear offer, limited-time pricing, and genuine urgency. Use testimonials from people you've helped and show the transformation: from their current state to their desired outcome. |
+
+### 6. IMMEDIATE VALIDATION (Test Carousel)
+
+**Purpose:** Test demand before creating the full product. Post these 3 Stories to gauge interest.
+
+**Story 1 - The Hook (Pain Point):**
+> "[Exact text for a story that calls out the main struggle your audience faces - make it relatable and specific]"
+
+**Story 2 - The Agitation (Deeper Problem):**
+> "[Exact text that deepens the emotional connection - what happens if they don't solve this? What have they tried that didn't work?]"
+
+**Story 3 - The Solution + CTA:**
+> "[Exact text introducing that you're working on something to help + a clear call-to-action like 'DM me X if you want early access']"
+
+**How to Measure Success:**
+- **50+ DMs/replies** = Strong demand - proceed with full launch
+- **20-50 DMs/replies** = Moderate interest - do more warm-up content
+- **<20 DMs/replies** = Weak signal - revisit positioning or audience fit
 
 Output in clean markdown format. Be specific with numbers and recommendations based on the actual data extracted from the screenshots.`
     });
