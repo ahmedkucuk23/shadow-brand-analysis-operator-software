@@ -663,6 +663,10 @@ function MonetizationGameplanStep({
   setIsLoading: (loading: boolean) => void;
   language: string;
 }) {
+  const [screenshots, setScreenshots] = useState<{ file: File; preview: string; base64: string; mediaType: string }[]>([]);
+  const [analysisMode, setAnalysisMode] = useState<"manual" | "screenshots">("manual");
+  const [isDragging, setIsDragging] = useState(false);
+
   const handleGenerate = async () => {
     setIsLoading(true);
     try {
@@ -681,6 +685,32 @@ function MonetizationGameplanStep({
     }
   };
 
+  const handleAnalyzeScreenshots = async () => {
+    if (screenshots.length === 0) {
+      alert("Please upload at least one screenshot");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const images = screenshots.map((s) => ({
+        base64: s.base64,
+        mediaType: s.mediaType,
+      }));
+      const response = await fetch("/api/analyze/screenshots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images, language }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to analyze");
+      updateData({ ...data, content: result.content });
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to analyze screenshots");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleDownload = () => {
     if (!data.content) return;
     downloadPDF("Monetization_Gameplan", data.content, "amber");
@@ -688,6 +718,74 @@ function MonetizationGameplanStep({
 
   const handleUpload = (content: string) => {
     updateData({ ...data, content });
+  };
+
+  const handleImageUpload = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const validFiles = fileArray.filter((file) =>
+      ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"].includes(file.type)
+    );
+
+    if (validFiles.length === 0) {
+      alert("Please upload valid image files (PNG, JPG, WEBP, GIF)");
+      return;
+    }
+
+    const newScreenshots = await Promise.all(
+      validFiles.map(async (file) => {
+        const base64 = await fileToBase64(file);
+        const preview = URL.createObjectURL(file);
+        return {
+          file,
+          preview,
+          base64,
+          mediaType: file.type as string,
+        };
+      })
+    );
+
+    setScreenshots((prev) => [...prev, ...newScreenshots]);
+  };
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove the data:image/xxx;base64, prefix
+        const base64 = result.split(",")[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const removeScreenshot = (index: number) => {
+    setScreenshots((prev) => {
+      const newScreenshots = [...prev];
+      URL.revokeObjectURL(newScreenshots[index].preview);
+      newScreenshots.splice(index, 1);
+      return newScreenshots;
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files) {
+      handleImageUpload(e.dataTransfer.files);
+    }
   };
 
   if (data.content) {
@@ -713,55 +811,230 @@ function MonetizationGameplanStep({
 
       <UploadSection onUpload={handleUpload} documentName="Monetization Gameplan" />
 
-      <div className="grid md:grid-cols-2 gap-6 mt-6">
-        <FormField
-          label="Creator Name"
-          value={data.creatorName}
-          onChange={(v) => updateData({ ...data, creatorName: v })}
-          placeholder="Your name or brand name"
-        />
-        <FormField
-          label="Instagram Handle"
-          value={data.handle}
-          onChange={(v) => updateData({ ...data, handle: v })}
-          placeholder="@yourhandle"
-        />
-        <FormField
-          label="Niche"
-          value={data.niche}
-          onChange={(v) => updateData({ ...data, niche: v })}
-          placeholder="e.g., Fitness, Business, Lifestyle"
-        />
-        <FormField
-          label="Location"
-          value={data.location}
-          onChange={(v) => updateData({ ...data, location: v })}
-          placeholder="e.g., New York, USA"
-        />
-        <FormField
-          label="Followers"
-          value={data.followers}
-          onChange={(v) => updateData({ ...data, followers: v })}
-          placeholder="e.g., 25000"
-        />
-        <FormField
-          label="Engagement Rate (%)"
-          value={data.engagementRate}
-          onChange={(v) => updateData({ ...data, engagementRate: v })}
-          placeholder="e.g., 3.5"
-        />
-      </div>
-      <div className="mt-4">
-        <FormField
-          label="Existing Offerings (what you currently sell, if anything)"
-          value={data.existingOfferings}
-          onChange={(v) => updateData({ ...data, existingOfferings: v })}
-          placeholder="e.g., 1:1 coaching, ebook, nothing yet..."
-          multiline
-        />
+      {/* Mode Selection */}
+      <div className="mt-6 mb-6">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-sm font-medium text-slate-700">Analysis Method:</span>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setAnalysisMode("screenshots")}
+            className={`flex-1 p-4 rounded-xl border-2 transition-all ${
+              analysisMode === "screenshots"
+                ? "border-amber-500 bg-amber-50"
+                : "border-slate-200 hover:border-slate-300"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                analysisMode === "screenshots" ? "bg-amber-100" : "bg-slate-100"
+              }`}>
+                <Upload className={`w-5 h-5 ${analysisMode === "screenshots" ? "text-amber-600" : "text-slate-400"}`} />
+              </div>
+              <div className="text-left">
+                <p className={`font-semibold ${analysisMode === "screenshots" ? "text-amber-700" : "text-slate-700"}`}>
+                  Screenshot Analysis
+                </p>
+                <p className="text-xs text-slate-500">Upload Instagram, Social Blade, Insights screenshots</p>
+              </div>
+            </div>
+          </button>
+          <button
+            onClick={() => setAnalysisMode("manual")}
+            className={`flex-1 p-4 rounded-xl border-2 transition-all ${
+              analysisMode === "manual"
+                ? "border-amber-500 bg-amber-50"
+                : "border-slate-200 hover:border-slate-300"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                analysisMode === "manual" ? "bg-amber-100" : "bg-slate-100"
+              }`}>
+                <FileText className={`w-5 h-5 ${analysisMode === "manual" ? "text-amber-600" : "text-slate-400"}`} />
+              </div>
+              <div className="text-left">
+                <p className={`font-semibold ${analysisMode === "manual" ? "text-amber-700" : "text-slate-700"}`}>
+                  Manual Entry
+                </p>
+                <p className="text-xs text-slate-500">Enter metrics and details manually</p>
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
 
-      <GenerateButton onClick={handleGenerate} isLoading={isLoading} />
+      {analysisMode === "screenshots" ? (
+        <div className="space-y-4">
+          {/* Screenshot Upload Area */}
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
+              isDragging
+                ? "border-amber-500 bg-amber-50"
+                : "border-slate-300 hover:border-amber-400 hover:bg-amber-50/50"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                isDragging ? "bg-amber-100" : "bg-slate-100"
+              }`}>
+                <Upload className={`w-8 h-8 ${isDragging ? "text-amber-600" : "text-slate-400"}`} />
+              </div>
+              <div>
+                <p className="font-semibold text-slate-700">
+                  {isDragging ? "Drop screenshots here" : "Drag & drop screenshots"}
+                </p>
+                <p className="text-sm text-slate-500 mt-1">
+                  Instagram profile, Social Blade, Insights, comments...
+                </p>
+              </div>
+              <label className="mt-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-lg cursor-pointer hover:bg-amber-200 transition-colors font-medium">
+                Browse Files
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => e.target.files && handleImageUpload(e.target.files)}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Screenshot Previews */}
+          {screenshots.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-700">
+                  {screenshots.length} screenshot{screenshots.length > 1 ? "s" : ""} uploaded
+                </p>
+                <button
+                  onClick={() => setScreenshots([])}
+                  className="text-xs text-red-600 hover:text-red-700"
+                >
+                  Remove all
+                </button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {screenshots.map((screenshot, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={screenshot.preview}
+                      alt={`Screenshot ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border border-slate-200"
+                    />
+                    <button
+                      onClick={() => removeScreenshot(index)}
+                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                    <p className="text-xs text-slate-500 mt-1 truncate">{screenshot.file.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* What to upload info */}
+          <div className="bg-slate-50 rounded-xl p-4">
+            <p className="text-sm font-medium text-slate-700 mb-2">What to upload for best results:</p>
+            <ul className="text-sm text-slate-600 space-y-1">
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                Instagram profile page (shows followers, bio, posts)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                Social Blade statistics (growth trends)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                Instagram Insights (reach, demographics, engagement)
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                Comments section (audience sentiment)
+              </li>
+            </ul>
+          </div>
+
+          {/* Analyze Button */}
+          <button
+            onClick={handleAnalyzeScreenshots}
+            disabled={isLoading || screenshots.length === 0}
+            className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Analyzing Screenshots...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5" />
+                Analyze Screenshots & Generate Gameplan
+              </>
+            )}
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Manual Entry Form */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <FormField
+              label="Creator Name"
+              value={data.creatorName}
+              onChange={(v) => updateData({ ...data, creatorName: v })}
+              placeholder="Your name or brand name"
+            />
+            <FormField
+              label="Instagram Handle"
+              value={data.handle}
+              onChange={(v) => updateData({ ...data, handle: v })}
+              placeholder="@yourhandle"
+            />
+            <FormField
+              label="Niche"
+              value={data.niche}
+              onChange={(v) => updateData({ ...data, niche: v })}
+              placeholder="e.g., Fitness, Business, Lifestyle"
+            />
+            <FormField
+              label="Location"
+              value={data.location}
+              onChange={(v) => updateData({ ...data, location: v })}
+              placeholder="e.g., New York, USA"
+            />
+            <FormField
+              label="Followers"
+              value={data.followers}
+              onChange={(v) => updateData({ ...data, followers: v })}
+              placeholder="e.g., 25000"
+            />
+            <FormField
+              label="Engagement Rate (%)"
+              value={data.engagementRate}
+              onChange={(v) => updateData({ ...data, engagementRate: v })}
+              placeholder="e.g., 3.5"
+            />
+          </div>
+          <div className="mt-4">
+            <FormField
+              label="Existing Offerings (what you currently sell, if anything)"
+              value={data.existingOfferings}
+              onChange={(v) => updateData({ ...data, existingOfferings: v })}
+              placeholder="e.g., 1:1 coaching, ebook, nothing yet..."
+              multiline
+            />
+          </div>
+
+          <GenerateButton onClick={handleGenerate} isLoading={isLoading} />
+        </>
+      )}
     </div>
   );
 }
