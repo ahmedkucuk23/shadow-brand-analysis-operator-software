@@ -122,14 +122,18 @@ function PersonalityDNAForm({ onGenerated }: { onGenerated: () => void }) {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to generate");
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.details || data.error || "Failed to generate");
+      }
+
       setGeneratedContent(data.content);
       onGenerated();
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to generate. Please try again.");
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to generate: ${errorMsg}`);
     } finally {
       setIsGenerating(false);
     }
@@ -776,14 +780,18 @@ function AudienceDNAForm({ onGenerated }: { onGenerated: () => void }) {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to generate");
-
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.details || data.error || "Failed to generate");
+      }
+
       setGeneratedContent(data.content);
       onGenerated();
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to generate. Please try again.");
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to generate: ${errorMsg}`);
     } finally {
       setIsGenerating(false);
     }

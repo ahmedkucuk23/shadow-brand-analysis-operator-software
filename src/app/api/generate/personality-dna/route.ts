@@ -2,16 +2,21 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error("ANTHROPIC_API_KEY is not set");
+    return NextResponse.json({ error: "API key not configured" }, { status: 500 });
+  }
+
+  const client = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  });
 
   try {
     const data = await request.json();
@@ -150,8 +155,9 @@ Output in clean markdown format with clear headers.`;
     });
   } catch (error) {
     console.error("Error generating Personality DNA:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to generate content" },
+      { error: "Failed to generate content", details: errorMessage },
       { status: 500 }
     );
   }
