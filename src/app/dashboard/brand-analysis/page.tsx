@@ -142,6 +142,33 @@ function PersonalityDNAForm({ onGenerated }: { onGenerated: () => void }) {
   const handleDownloadPDF = () => {
     if (!generatedContent) return;
 
+    // Parse markdown to styled HTML
+    const formatContent = (content: string) => {
+      let html = content
+        // Headers
+        .replace(/^### (.+)$/gm, '<h3 class="subsection">$1</h3>')
+        .replace(/^## (\d+)\. (.+)$/gm, '<div class="section-header"><span class="section-num">$1</span><h2>$2</h2></div>')
+        .replace(/^## (.+)$/gm, '<h2 class="section-title">$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        // Bold
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Lists
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/^→ (.+)$/gm, '<li class="arrow">$1</li>')
+        // Quotes
+        .replace(/^"(.+)"$/gm, '<blockquote>"$1"</blockquote>')
+        // Line breaks
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+      // Wrap consecutive li elements in ul
+      html = html.replace(/(<li[^>]*>.*?<\/li>)(\s*<li)/g, '$1$2');
+      html = html.replace(/(<li[^>]*>.*?<\/li>)(?!\s*<li)/g, '<ul>$1</ul>');
+      html = html.replace(/<\/ul>\s*<ul>/g, '');
+
+      return html;
+    };
+
     const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(`
@@ -150,17 +177,230 @@ function PersonalityDNAForm({ onGenerated }: { onGenerated: () => void }) {
         <head>
           <title>Personality DNA</title>
           <style>
-            body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-            h1 { color: #e11d48; border-bottom: 2px solid #e11d48; padding-bottom: 10px; }
-            h2 { color: #1e293b; margin-top: 30px; }
-            h3 { color: #475569; }
-            pre { white-space: pre-wrap; word-wrap: break-word; }
-            @media print { body { padding: 20px; } }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+
+            body {
+              font-family: 'Inter', system-ui, -apple-system, sans-serif;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 0;
+              line-height: 1.7;
+              color: #1e293b;
+              font-size: 14px;
+            }
+
+            /* Cover Page */
+            .cover {
+              min-height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              padding: 60px;
+              page-break-after: always;
+            }
+
+            .cover-label {
+              font-size: 14px;
+              font-weight: 600;
+              color: #b45309;
+              letter-spacing: 2px;
+              margin-bottom: 16px;
+            }
+
+            .cover-title {
+              font-size: 48px;
+              font-weight: 700;
+              color: #1e293b;
+              margin-bottom: 8px;
+              position: relative;
+              display: inline-block;
+            }
+
+            .cover-title::after {
+              content: '';
+              position: absolute;
+              bottom: -4px;
+              left: 0;
+              width: 60%;
+              height: 4px;
+              background: linear-gradient(90deg, #b45309, #d97706);
+            }
+
+            .cover-subtitle {
+              font-size: 16px;
+              color: #64748b;
+              margin-top: 24px;
+              margin-bottom: 60px;
+            }
+
+            .cover-meta {
+              border-collapse: collapse;
+              width: 100%;
+              max-width: 400px;
+            }
+
+            .cover-meta td {
+              padding: 12px 0;
+              border-bottom: 1px solid #e2e8f0;
+            }
+
+            .cover-meta td:first-child {
+              font-weight: 600;
+              color: #b45309;
+              width: 140px;
+            }
+
+            .cover-footer {
+              margin-top: auto;
+              padding-top: 40px;
+              font-size: 12px;
+              color: #94a3b8;
+            }
+
+            /* Content */
+            .content {
+              padding: 40px 60px;
+            }
+
+            .section-header {
+              display: flex;
+              align-items: baseline;
+              gap: 16px;
+              margin-top: 48px;
+              margin-bottom: 24px;
+              padding-bottom: 12px;
+              border-bottom: 2px solid #1e293b;
+            }
+
+            .section-num {
+              font-size: 14px;
+              font-weight: 600;
+              color: #b45309;
+            }
+
+            .section-header h2 {
+              font-size: 24px;
+              font-weight: 700;
+              color: #1e293b;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .section-title {
+              font-size: 20px;
+              font-weight: 700;
+              color: #1e293b;
+              margin-top: 32px;
+              margin-bottom: 16px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #b45309;
+            }
+
+            h3.subsection {
+              font-size: 16px;
+              font-weight: 600;
+              color: #334155;
+              margin-top: 24px;
+              margin-bottom: 12px;
+            }
+
+            p {
+              margin-bottom: 16px;
+            }
+
+            strong {
+              color: #1e293b;
+              font-weight: 600;
+            }
+
+            ul {
+              list-style: none;
+              margin: 16px 0;
+            }
+
+            li {
+              padding: 8px 0 8px 24px;
+              position: relative;
+            }
+
+            li::before {
+              content: '•';
+              position: absolute;
+              left: 8px;
+              color: #b45309;
+              font-weight: bold;
+            }
+
+            li.arrow::before {
+              content: '→';
+            }
+
+            blockquote {
+              background: #fef3c7;
+              border-left: 4px solid #b45309;
+              padding: 16px 20px;
+              margin: 20px 0;
+              font-style: italic;
+              color: #92400e;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+            }
+
+            th {
+              background: linear-gradient(135deg, #92400e, #b45309);
+              color: white;
+              font-weight: 600;
+              text-align: left;
+              padding: 12px 16px;
+            }
+
+            td {
+              padding: 12px 16px;
+              border-bottom: 1px solid #e2e8f0;
+            }
+
+            tr:nth-child(even) {
+              background: #f8fafc;
+            }
+
+            .highlight-box {
+              background: #f1f5f9;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+
+            @media print {
+              body { padding: 0; }
+              .cover { min-height: auto; page-break-after: always; }
+              .content { padding: 20px 40px; }
+            }
           </style>
         </head>
         <body>
-          <h1>Personality DNA</h1>
-          <div>${generatedContent.replace(/\n/g, "<br>").replace(/### /g, "<h3>").replace(/## /g, "<h2>").replace(/# /g, "<h1>")}</div>
+          <div class="cover">
+            <div class="cover-label">CREATOR DNA</div>
+            <h1 class="cover-title">PERSONALITY DNA</h1>
+            <p class="cover-subtitle">Complete brand voice, identity, and credentials profile</p>
+
+            <table class="cover-meta">
+              <tr><td>DOCUMENT</td><td>Personality DNA</td></tr>
+              <tr><td>TYPE</td><td>Brand Identity Profile</td></tr>
+              <tr><td>GENERATED</td><td>${new Date().toLocaleDateString()}</td></tr>
+            </table>
+
+            <div class="cover-footer">Document 1 of 2 | Creator DNA Framework</div>
+          </div>
+
+          <div class="content">
+            ${formatContent(generatedContent)}
+          </div>
         </body>
         </html>
       `);
@@ -800,6 +1040,33 @@ function AudienceDNAForm({ onGenerated }: { onGenerated: () => void }) {
   const handleDownloadPDF = () => {
     if (!generatedContent) return;
 
+    // Parse markdown to styled HTML
+    const formatContent = (content: string) => {
+      let html = content
+        // Headers
+        .replace(/^### (.+)$/gm, '<h3 class="subsection">$1</h3>')
+        .replace(/^## (\d+)\. (.+)$/gm, '<div class="section-header"><span class="section-num">$1</span><h2>$2</h2></div>')
+        .replace(/^## (.+)$/gm, '<h2 class="section-title">$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        // Bold
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        // Lists
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/^→ (.+)$/gm, '<li class="arrow">$1</li>')
+        // Quotes
+        .replace(/^"(.+)"$/gm, '<blockquote>"$1"</blockquote>')
+        // Line breaks
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+      // Wrap consecutive li elements in ul
+      html = html.replace(/(<li[^>]*>.*?<\/li>)(\s*<li)/g, '$1$2');
+      html = html.replace(/(<li[^>]*>.*?<\/li>)(?!\s*<li)/g, '<ul>$1</ul>');
+      html = html.replace(/<\/ul>\s*<ul>/g, '');
+
+      return html;
+    };
+
     const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(`
@@ -808,20 +1075,230 @@ function AudienceDNAForm({ onGenerated }: { onGenerated: () => void }) {
         <head>
           <title>Audience DNA</title>
           <style>
-            body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.6; }
-            h1 { color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
-            h2 { color: #1e293b; margin-top: 30px; }
-            h3 { color: #475569; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
-            th { background: #f1f5f9; }
-            pre { white-space: pre-wrap; word-wrap: break-word; }
-            @media print { body { padding: 20px; } }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+
+            body {
+              font-family: 'Inter', system-ui, -apple-system, sans-serif;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 0;
+              line-height: 1.7;
+              color: #1e293b;
+              font-size: 14px;
+            }
+
+            /* Cover Page */
+            .cover {
+              min-height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              padding: 60px;
+              page-break-after: always;
+            }
+
+            .cover-label {
+              font-size: 14px;
+              font-weight: 600;
+              color: #2563eb;
+              letter-spacing: 2px;
+              margin-bottom: 16px;
+            }
+
+            .cover-title {
+              font-size: 48px;
+              font-weight: 700;
+              color: #1e293b;
+              margin-bottom: 8px;
+              position: relative;
+              display: inline-block;
+            }
+
+            .cover-title::after {
+              content: '';
+              position: absolute;
+              bottom: -4px;
+              left: 0;
+              width: 60%;
+              height: 4px;
+              background: linear-gradient(90deg, #2563eb, #3b82f6);
+            }
+
+            .cover-subtitle {
+              font-size: 16px;
+              color: #64748b;
+              margin-top: 24px;
+              margin-bottom: 60px;
+            }
+
+            .cover-meta {
+              border-collapse: collapse;
+              width: 100%;
+              max-width: 400px;
+            }
+
+            .cover-meta td {
+              padding: 12px 0;
+              border-bottom: 1px solid #e2e8f0;
+            }
+
+            .cover-meta td:first-child {
+              font-weight: 600;
+              color: #2563eb;
+              width: 140px;
+            }
+
+            .cover-footer {
+              margin-top: auto;
+              padding-top: 40px;
+              font-size: 12px;
+              color: #94a3b8;
+            }
+
+            /* Content */
+            .content {
+              padding: 40px 60px;
+            }
+
+            .section-header {
+              display: flex;
+              align-items: baseline;
+              gap: 16px;
+              margin-top: 48px;
+              margin-bottom: 24px;
+              padding-bottom: 12px;
+              border-bottom: 2px solid #1e293b;
+            }
+
+            .section-num {
+              font-size: 14px;
+              font-weight: 600;
+              color: #2563eb;
+            }
+
+            .section-header h2 {
+              font-size: 24px;
+              font-weight: 700;
+              color: #1e293b;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .section-title {
+              font-size: 20px;
+              font-weight: 700;
+              color: #1e293b;
+              margin-top: 32px;
+              margin-bottom: 16px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #2563eb;
+            }
+
+            h3.subsection {
+              font-size: 16px;
+              font-weight: 600;
+              color: #334155;
+              margin-top: 24px;
+              margin-bottom: 12px;
+            }
+
+            p {
+              margin-bottom: 16px;
+            }
+
+            strong {
+              color: #1e293b;
+              font-weight: 600;
+            }
+
+            ul {
+              list-style: none;
+              margin: 16px 0;
+            }
+
+            li {
+              padding: 8px 0 8px 24px;
+              position: relative;
+            }
+
+            li::before {
+              content: '•';
+              position: absolute;
+              left: 8px;
+              color: #2563eb;
+              font-weight: bold;
+            }
+
+            li.arrow::before {
+              content: '→';
+            }
+
+            blockquote {
+              background: #dbeafe;
+              border-left: 4px solid #2563eb;
+              padding: 16px 20px;
+              margin: 20px 0;
+              font-style: italic;
+              color: #1e40af;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+            }
+
+            th {
+              background: linear-gradient(135deg, #1d4ed8, #2563eb);
+              color: white;
+              font-weight: 600;
+              text-align: left;
+              padding: 12px 16px;
+            }
+
+            td {
+              padding: 12px 16px;
+              border-bottom: 1px solid #e2e8f0;
+            }
+
+            tr:nth-child(even) {
+              background: #f8fafc;
+            }
+
+            .highlight-box {
+              background: #f1f5f9;
+              border-radius: 8px;
+              padding: 20px;
+              margin: 20px 0;
+            }
+
+            @media print {
+              body { padding: 0; }
+              .cover { min-height: auto; page-break-after: always; }
+              .content { padding: 20px 40px; }
+            }
           </style>
         </head>
         <body>
-          <h1>Audience DNA</h1>
-          <div>${generatedContent.replace(/\n/g, "<br>").replace(/### /g, "<h3>").replace(/## /g, "<h2>").replace(/# /g, "<h1>")}</div>
+          <div class="cover">
+            <div class="cover-label">CREATOR DNA</div>
+            <h1 class="cover-title">AUDIENCE DNA</h1>
+            <p class="cover-subtitle">Complete ideal customer psychology and behavior profile</p>
+
+            <table class="cover-meta">
+              <tr><td>DOCUMENT</td><td>Audience DNA</td></tr>
+              <tr><td>TYPE</td><td>Customer Psychology Profile</td></tr>
+              <tr><td>GENERATED</td><td>${new Date().toLocaleDateString()}</td></tr>
+            </table>
+
+            <div class="cover-footer">Document 2 of 2 | Creator DNA Framework</div>
+          </div>
+
+          <div class="content">
+            ${formatContent(generatedContent)}
+          </div>
         </body>
         </html>
       `);
