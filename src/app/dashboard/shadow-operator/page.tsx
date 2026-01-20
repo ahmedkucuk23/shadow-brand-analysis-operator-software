@@ -21,7 +21,9 @@ import {
   Calendar,
   Rocket,
   Globe,
+  FileDown,
 } from "lucide-react";
+import { downloadPDF as downloadProfessionalPDF, downloadLaunchPDF, type DocumentType } from "@/lib/pdf/generator";
 
 // Supported languages
 const LANGUAGES = [
@@ -711,9 +713,9 @@ function MonetizationGameplanStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Monetization_Gameplan", data.content, "amber");
+    await downloadPDF("Monetization_Gameplan", data.content, "monetization-gameplan", data.creatorName);
   };
 
   const handleUpload = (content: string) => {
@@ -1082,9 +1084,9 @@ function PersonalityDNAStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Personality_DNA", data.content, "rose");
+    await downloadPDF("Personality_DNA", data.content, "personality-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -1321,9 +1323,9 @@ function AudienceDNAStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Audience_DNA", data.content, "blue");
+    await downloadPDF("Audience_DNA", data.content, "audience-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -1633,9 +1635,9 @@ function UVZAnalysisStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("UVZ_Analysis_Top20", data.content, "violet");
+    await downloadPDF("UVZ_Analysis_Top20", data.content, "uvz-analysis");
   };
 
   const handleUpload = (content: string) => {
@@ -1747,9 +1749,9 @@ function CoachingOfferStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Coaching_Offer", data.content, "emerald");
+    await downloadPDF("Coaching_Offer", data.content, "coaching-offer");
   };
 
   const handleUpload = (content: string) => {
@@ -1871,9 +1873,9 @@ function CoachingCharterStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Coaching_Charter", data.content, "orange");
+    await downloadPDF("Coaching_Charter", data.content, "coaching-charter");
   };
 
   const handleUpload = (content: string) => {
@@ -1973,9 +1975,9 @@ function ProductDNAStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("Product_DNA", data.content, "pink");
+    await downloadPDF("Product_DNA", data.content, "product-dna");
   };
 
   const handleUpload = (content: string) => {
@@ -2091,14 +2093,50 @@ function Launch14DayStep({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data.content) return;
-    downloadPDF("14_Day_Launch_Overview", data.content, "red");
+    await downloadPDF("14_Day_Launch_Overview", data.content, "14day-launch");
   };
 
-  const handleDownloadDay = (day: number) => {
+  const handleDownloadDay = async (day: number) => {
     if (!data.dailyPlaybooks || !data.dailyPlaybooks[`day${day}`]) return;
-    downloadPDF(`Day_${day.toString().padStart(2, "0")}_Playbook`, data.dailyPlaybooks[`day${day}`], "red");
+    await downloadPDF(`Day_${day.toString().padStart(2, "0")}_Playbook`, data.dailyPlaybooks[`day${day}`], "14day-launch");
+  };
+
+  const handleDownloadAllDays = async () => {
+    if (!data.dailyPlaybooks) return;
+    const dayPhases: { [key: number]: { title: string; phase: string } } = {
+      1: { title: "Survey Day", phase: "WARM UP" },
+      2: { title: "Validation Day", phase: "WARM UP" },
+      3: { title: "Commitment Day", phase: "WARM UP" },
+      4: { title: "Opportunity Day", phase: "VALUE" },
+      5: { title: "Integration Day", phase: "VALUE" },
+      6: { title: "Framework Day", phase: "VALUE" },
+      7: { title: "Framework Day 2", phase: "VALUE" },
+      8: { title: "Ownership Day", phase: "TRANSITION" },
+      9: { title: "Pre-Cart Q&A", phase: "TRANSITION" },
+      10: { title: "Cart Open!", phase: "OPEN CART" },
+      11: { title: "Social Proof", phase: "OPEN CART" },
+      12: { title: "FAQ Day", phase: "OPEN CART" },
+      13: { title: "Last Chance", phase: "OPEN CART" },
+      14: { title: "Cart Close", phase: "OPEN CART" },
+    };
+
+    const days = Array.from({ length: 14 }, (_, i) => i + 1)
+      .filter((day) => data.dailyPlaybooks?.[`day${day}`])
+      .map((day) => ({
+        day,
+        title: dayPhases[day]?.title || `Day ${day}`,
+        phase: dayPhases[day]?.phase || "LAUNCH",
+        content: data.dailyPlaybooks![`day${day}`],
+      }));
+
+    await downloadLaunchPDF(
+      days,
+      { type: "14day-launch", date: new Date().toLocaleDateString() },
+      true,
+      "14_Day_Launch_Complete"
+    );
   };
 
   const handleUpload = (content: string) => {
@@ -2117,20 +2155,40 @@ function Launch14DayStep({
         />
 
         {data.dailyPlaybooks && (
-          <div className="mt-6">
-            <h3 className="font-semibold text-slate-900 mb-4">Download Individual Day Playbooks</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              {Array.from({ length: 14 }, (_, i) => i + 1).map((day) => (
+          <div className="mt-6 space-y-4">
+            {/* All-in-One Download Option */}
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border border-red-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-red-900">Complete Launch Playbook</h3>
+                  <p className="text-sm text-red-600">Download all 14 days in one professional PDF</p>
+                </div>
                 <button
-                  key={day}
-                  onClick={() => handleDownloadDay(day)}
-                  disabled={!data.dailyPlaybooks?.[`day${day}`]}
-                  className="flex flex-col items-center gap-1 p-3 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors disabled:opacity-50"
+                  onClick={handleDownloadAllDays}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
                 >
-                  <Calendar className="w-5 h-5 text-red-600" />
-                  <span className="text-sm font-medium text-red-700">Day {day}</span>
+                  <FileDown className="w-5 h-5" />
+                  Download All Days
                 </button>
-              ))}
+              </div>
+            </div>
+
+            {/* Individual Day Downloads */}
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-4">Or Download Individual Day Playbooks</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                {Array.from({ length: 14 }, (_, i) => i + 1).map((day) => (
+                  <button
+                    key={day}
+                    onClick={() => handleDownloadDay(day)}
+                    disabled={!data.dailyPlaybooks?.[`day${day}`]}
+                    className="flex flex-col items-center gap-1 p-3 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors disabled:opacity-50"
+                  >
+                    <Calendar className="w-5 h-5 text-red-600" />
+                    <span className="text-sm font-medium text-red-700">Day {day}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -2496,70 +2554,61 @@ function GeneratedContentView({
   );
 }
 
-// PDF Download Helper
-function downloadPDF(filename: string, content: string, color: string) {
-  const colorMap: { [key: string]: { primary: string; light: string } } = {
-    amber: { primary: "#b45309", light: "#fef3c7" },
-    rose: { primary: "#be123c", light: "#ffe4e6" },
-    blue: { primary: "#2563eb", light: "#dbeafe" },
-    violet: { primary: "#7c3aed", light: "#ede9fe" },
-    emerald: { primary: "#059669", light: "#d1fae5" },
-    orange: { primary: "#ea580c", light: "#ffedd5" },
-    pink: { primary: "#db2777", light: "#fce7f3" },
-    red: { primary: "#dc2626", light: "#fee2e2" },
-  };
-
-  const colors = colorMap[color] || colorMap.blue;
-
-  const formatContent = (text: string) => {
-    return text
-      .replace(/^### (.+)$/gm, '<h3 class="subsection">$1</h3>')
-      .replace(/^## (\d+)\. (.+)$/gm, '<div class="section-header"><span class="section-num">$1</span><h2>$2</h2></div>')
-      .replace(/^## (.+)$/gm, '<h2 class="section-title">$1</h2>')
-      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-      .replace(/^- (.+)$/gm, "<li>$1</li>")
-      .replace(/\n\n/g, "</p><p>")
-      .replace(/\n/g, "<br>");
-  };
-
-  const printWindow = window.open("", "_blank");
-  if (printWindow) {
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${filename}</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.7; color: #1e293b; font-size: 14px; }
-          h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; color: ${colors.primary}; }
-          h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid ${colors.primary}; }
-          h3.subsection { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 12px; }
-          .section-header { display: flex; align-items: baseline; gap: 16px; margin-top: 48px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #1e293b; }
-          .section-num { font-size: 14px; font-weight: 600; color: ${colors.primary}; }
-          .section-header h2 { margin: 0; border: none; padding: 0; }
-          p { margin-bottom: 16px; }
-          strong { color: #1e293b; font-weight: 600; }
-          ul { list-style: none; margin: 16px 0; }
-          li { padding: 8px 0 8px 24px; position: relative; }
-          li::before { content: '•'; position: absolute; left: 8px; color: ${colors.primary}; font-weight: bold; }
-          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th { background: ${colors.primary}; color: white; font-weight: 600; text-align: left; padding: 12px 16px; }
-          td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
-          tr:nth-child(even) { background: #f8fafc; }
-          @media print { body { padding: 20px; } }
-        </style>
-      </head>
-      <body>
-        <h1>${filename.replace(/_/g, " ")}</h1>
-        <p style="color: #64748b; margin-bottom: 32px;">Generated on ${new Date().toLocaleDateString()}</p>
-        ${formatContent(content)}
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
+// PDF Download Helper - Professional styled PDFs
+async function downloadPDF(
+  filename: string,
+  content: string,
+  documentType: DocumentType,
+  creatorName?: string
+) {
+  try {
+    await downloadProfessionalPDF(
+      content,
+      {
+        type: documentType,
+        creatorName,
+        date: new Date().toLocaleDateString(),
+      },
+      `${filename}.pdf`
+    );
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    // Fallback to simple print
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${filename}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 40px; line-height: 1.7; color: #1e293b; font-size: 14px; }
+            h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; color: #c9a227; }
+            h2 { font-size: 20px; font-weight: 700; margin-top: 32px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #c9a227; }
+            h3 { font-size: 16px; font-weight: 600; color: #334155; margin-top: 24px; margin-bottom: 12px; }
+            p { margin-bottom: 16px; }
+            strong { color: #1e293b; font-weight: 600; }
+            ul { list-style: none; margin: 16px 0; }
+            li { padding: 8px 0 8px 24px; position: relative; }
+            li::before { content: '•'; position: absolute; left: 8px; color: #c9a227; font-weight: bold; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th { background: #0a0a0a; color: white; font-weight: 600; text-align: left; padding: 12px 16px; }
+            td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+            tr:nth-child(even) { background: #f8fafc; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <h1>${filename.replace(/_/g, " ")}</h1>
+          <p style="color: #64748b; margin-bottom: 32px;">Generated on ${new Date().toLocaleDateString()}</p>
+          <pre style="white-space: pre-wrap; font-family: inherit;">${content}</pre>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
   }
 }
