@@ -85,7 +85,10 @@ export function ProjectSelector({
 
     if (!res.ok) {
       const data = await res.json();
-      throw new Error(data.error || "Failed to create influencer");
+      const errorMsg = data.details
+        ? `${data.error}: ${data.details}`
+        : data.error || "Failed to create influencer";
+      throw new Error(errorMsg);
     }
 
     const { influencer } = await res.json();
