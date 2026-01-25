@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { extractText } from "unpdf";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -23,17 +24,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to Buffer
+    // Convert file to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // Dynamically import pdf-parse-new (CommonJS module)
-    const pdfParse = (await import("pdf-parse-new")).default;
+    // Extract text using unpdf (serverless-compatible)
+    const { text, totalPages } = await extractText(arrayBuffer);
 
-    // Parse PDF
-    const data = await pdfParse(buffer);
+    // text is an array of strings (one per page), join them
+    const fullText = Array.isArray(text) ? text.join("\n\n") : text;
 
-    if (!data.text || data.text.trim().length === 0) {
+    if (!fullText || fullText.trim().length === 0) {
       return NextResponse.json(
         { error: "Could not extract text from PDF. The file may be image-based or corrupted." },
         { status: 400 }
@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      text: data.text,
-      numPages: data.numpages,
+      text: fullText,
+      numPages: totalPages,
     });
   } catch (error) {
     console.error("Error parsing PDF:", error);
