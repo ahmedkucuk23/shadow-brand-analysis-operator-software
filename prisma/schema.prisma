@@ -20,9 +20,11 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  blogPosts     BlogPost[]
+  accounts           Account[]
+  sessions           Session[]
+  blogPosts          BlogPost[]
+  influencers        Influencer[]
+  influencerProjects InfluencerProject[]
 }
 
 model Account {
@@ -152,4 +154,38 @@ model ContactSubmission {
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Shadow Operator - Influencer and Project tracking
+
+model Influencer {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  handle    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projects  InfluencerProject[]
+
+  @@index([userId])
+}
+
+model InfluencerProject {
+  id             String     @id @default(cuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  influencerId   String
+  influencer     Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  name           String
+  wizardState    Json
+  currentStep    Int        @default(1)
+  completedSteps Int[]      @default([])
+  status         String     @default("in_progress") // in_progress, completed
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  lastAccessedAt DateTime   @default(now())
+
+  @@index([userId])
+  @@index([influencerId])
 }

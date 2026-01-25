@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   ChevronRight,
   ChevronLeft,
@@ -22,7 +22,12 @@ import {
   Rocket,
   Globe,
   FileDown,
+  FolderOpen,
+  Cloud,
+  CloudOff,
+  Check,
 } from "lucide-react";
+import { ProjectSelector } from "@/components/projects";
 
 // Supported languages
 const LANGUAGES = [
@@ -274,31 +279,182 @@ const initialState: WizardState = {
   },
 };
 
+// Auto-save debounce delay (ms)
+const AUTO_SAVE_DELAY = 2000;
+
 export default function ShadowOperatorWizard() {
   const [state, setState] = useState<WizardState>(initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Load state from localStorage on mount
+  // Project state
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  const [currentProjectName, setCurrentProjectName] = useState<string | null>(null);
+  const [showProjectSelector, setShowProjectSelector] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedStateRef = useRef<string | null>(null);
+
+  // Load state from localStorage on mount (fallback for non-project mode)
   useEffect(() => {
     setIsMounted(true);
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setState(parsed);
-      } catch (e) {
-        console.error("Failed to parse saved state:", e);
+    // Check if there's a project ID in URL params
+    const params = new URLSearchParams(window.location.search);
+    const projectId = params.get("project");
+
+    if (projectId) {
+      // Load project from API
+      loadProject(projectId);
+    } else {
+      // Fall back to localStorage
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setState(parsed);
+        } catch (e) {
+          console.error("Failed to parse saved state:", e);
+        }
       }
     }
   }, []);
 
-  // Save state to localStorage on change
+  // Load project from API
+  const loadProject = async (projectId: string) => {
+    try {
+      const res = await fetch(`/api/projects/${projectId}`);
+      if (!res.ok) {
+        throw new Error("Failed to load project");
+      }
+      const { project } = await res.json();
+      setCurrentProjectId(project.id);
+      setCurrentProjectName(project.name);
+      setState(project.wizardState);
+      lastSavedStateRef.current = JSON.stringify(project.wizardState);
+
+      // Update URL
+      const url = new URL(window.location.href);
+      url.searchParams.set("project", projectId);
+      window.history.replaceState({}, "", url.toString());
+    } catch (error) {
+      console.error("Error loading project:", error);
+      // Fall back to localStorage
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          setState(JSON.parse(saved));
+        } catch (e) {
+          console.error("Failed to parse saved state:", e);
+        }
+      }
+    }
+  };
+
+  // Auto-save to API (debounced)
+  const saveToProject = useCallback(async (projectId: string, wizardState: WizardState) => {
+    const stateString = JSON.stringify(wizardState);
+
+    // Skip if state hasn't changed
+    if (stateString === lastSavedStateRef.current) {
+      return;
+    }
+
+    setSaveStatus("saving");
+
+    try {
+      const completedSteps = [1, 2, 3, 4, 5, 6, 7, 8].filter((stepId) => {
+        switch (stepId) {
+          case 1: return !!wizardState.monetizationGameplan.content;
+          case 2: return !!wizardState.personalityDNA.content;
+          case 3: return !!wizardState.audienceDNA.content;
+          case 4: return !!wizardState.uvzAnalysis.content;
+          case 5: return !!wizardState.coachingOffer.content;
+          case 6: return !!wizardState.coachingCharter.content;
+          case 7: return !!wizardState.productDNA.content;
+          case 8: return !!wizardState.launch14Day.content;
+          default: return false;
+        }
+      });
+
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          wizardState,
+          currentStep: wizardState.currentStep,
+          completedSteps,
+          status: completedSteps.length === 8 ? "completed" : "in_progress",
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save");
+      }
+
+      lastSavedStateRef.current = stateString;
+      setSaveStatus("saved");
+
+      // Reset to idle after showing saved
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Error saving project:", error);
+      setSaveStatus("error");
+    }
+  }, []);
+
+  // Save state to localStorage on change (fallback)
+  // And trigger auto-save for projects
   useEffect(() => {
     if (isMounted) {
+      // Always save to localStorage as fallback
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+      // If we have a project, trigger debounced auto-save
+      if (currentProjectId) {
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
+        }
+
+        saveTimeoutRef.current = setTimeout(() => {
+          saveToProject(currentProjectId, state);
+        }, AUTO_SAVE_DELAY);
+      }
     }
-  }, [state, isMounted]);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [state, isMounted, currentProjectId, saveToProject]);
+
+  // Handle project selection
+  const handleSelectProject = (projectId: string) => {
+    loadProject(projectId);
+  };
+
+  // Exit project mode
+  const handleExitProjectMode = () => {
+    setCurrentProjectId(null);
+    setCurrentProjectName(null);
+    setSaveStatus("idle");
+    lastSavedStateRef.current = null;
+
+    // Remove project from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete("project");
+    window.history.replaceState({}, "", url.toString());
+
+    // Load from localStorage
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setState(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved state:", e);
+      }
+    }
+  };
 
   const updateState = (updates: Partial<WizardState>) => {
     setState((prev) => ({ ...prev, ...updates }));
@@ -374,12 +530,69 @@ export default function ShadowOperatorWizard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Shadow Operator</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-slate-900">Shadow Operator</h1>
+            {currentProjectName && (
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                {currentProjectName}
+              </span>
+            )}
+          </div>
           <p className="text-slate-600 mt-1">
             Complete Creator Monetization System - 8 Sequential Phases
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Save Status Indicator */}
+          {currentProjectId && (
+            <div className="flex items-center gap-2 text-sm">
+              {saveStatus === "saving" && (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                  <span className="text-slate-500">Saving...</span>
+                </>
+              )}
+              {saveStatus === "saved" && (
+                <>
+                  <Check className="w-4 h-4 text-green-500" />
+                  <span className="text-green-600">Saved</span>
+                </>
+              )}
+              {saveStatus === "error" && (
+                <>
+                  <CloudOff className="w-4 h-4 text-red-500" />
+                  <span className="text-red-600">Save failed</span>
+                </>
+              )}
+              {saveStatus === "idle" && currentProjectId && (
+                <>
+                  <Cloud className="w-4 h-4 text-slate-400" />
+                  <span className="text-slate-500">Auto-save on</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Project Selector */}
+          <button
+            onClick={() => setShowProjectSelector(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:border-blue-300 hover:bg-blue-50/50 transition-all"
+          >
+            <FolderOpen className="w-4 h-4" />
+            {currentProjectId ? "Switch Project" : "Projects"}
+          </button>
+
+          {/* Exit Project Mode */}
+          {currentProjectId && (
+            <button
+              onClick={handleExitProjectMode}
+              className="px-3 py-2 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+              title="Exit project mode and use local storage"
+            >
+              Exit
+            </button>
+          )}
+
           {/* Language Selector */}
           <div className="relative">
             <select
@@ -416,6 +629,14 @@ export default function ShadowOperatorWizard() {
           </div>
         </div>
       </div>
+
+      {/* Project Selector Modal */}
+      <ProjectSelector
+        open={showProjectSelector}
+        onOpenChange={setShowProjectSelector}
+        onSelectProject={handleSelectProject}
+        currentProjectId={currentProjectId}
+      />
 
       {/* Progress Bar */}
       <div className="bg-white rounded-2xl p-6 border border-slate-100">
@@ -2469,16 +2690,55 @@ function UploadSection({
   onUpload: (content: string) => void;
   documentName: string;
 }) {
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      onUpload(content);
-    };
-    reader.readAsText(file);
+    setUploadError(null);
+
+    // Check if it's a PDF file
+    if (file.name.toLowerCase().endsWith(".pdf")) {
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/upload/pdf", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to parse PDF");
+        }
+
+        onUpload(data.text);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to upload PDF";
+        setUploadError(message);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      // Handle text files (.txt, .md)
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        onUpload(content);
+      };
+      reader.onerror = () => {
+        setUploadError("Failed to read file");
+      };
+      reader.readAsText(file);
+    }
+
+    // Reset the input so the same file can be uploaded again
+    e.target.value = "";
   };
 
   return (
@@ -2491,12 +2751,28 @@ function UploadSection({
           </span>
         </div>
         <label className="cursor-pointer">
-          <input type="file" accept=".txt,.md" onChange={handleFileUpload} className="hidden" />
-          <span className="text-sm font-medium text-blue-600 hover:text-blue-700">
-            Upload File
-          </span>
+          <input
+            type="file"
+            accept=".txt,.md,.pdf"
+            onChange={handleFileUpload}
+            className="hidden"
+            disabled={isUploading}
+          />
+          {isUploading ? (
+            <span className="text-sm font-medium text-slate-400 flex items-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Processing PDF...
+            </span>
+          ) : (
+            <span className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              Upload File
+            </span>
+          )}
         </label>
       </div>
+      {uploadError && (
+        <p className="text-sm text-red-600 mt-2">{uploadError}</p>
+      )}
     </div>
   );
 }
