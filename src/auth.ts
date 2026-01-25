@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import authConfig from "@/auth.config"
+import { db } from "@/lib/db"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -9,7 +10,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        // user.id from authorize is the email - find or create real DB user
+        const email = user.email?.toLowerCase()
+        if (email) {
+          let dbUser = await db.user.findUnique({
+            where: { email }
+          })
+
+          if (!dbUser) {
+            dbUser = await db.user.create({
+              data: {
+                email,
+                name: user.name,
+              }
+            })
+          }
+
+          token.id = dbUser.id
+        } else {
+          token.id = user.id
+        }
       }
       return token
     },

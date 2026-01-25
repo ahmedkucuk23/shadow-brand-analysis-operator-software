@@ -1,8 +1,7 @@
 import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { db } from "@/lib/db"
 
-// Authorized users (credentials only - IDs come from database)
+// Authorized users
 const AUTHORIZED_USERS = [
   {
     email: "ahmed@mita.ba",
@@ -39,25 +38,11 @@ export default {
           return null
         }
 
-        // Find or create user in database
-        let dbUser = await db.user.findUnique({
-          where: { email: authorizedUser.email.toLowerCase() }
-        })
-
-        if (!dbUser) {
-          // Create user in database
-          dbUser = await db.user.create({
-            data: {
-              email: authorizedUser.email.toLowerCase(),
-              name: authorizedUser.name,
-            }
-          })
-        }
-
+        // Return email as temporary ID - will be resolved to real DB ID in jwt callback
         return {
-          id: dbUser.id,
-          email: dbUser.email,
-          name: dbUser.name,
+          id: authorizedUser.email.toLowerCase(),
+          email: authorizedUser.email.toLowerCase(),
+          name: authorizedUser.name,
         }
       },
     }),
