@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
-
-// Disable worker for serverless environment
-pdfjsLib.GlobalWorkerOptions.workerSrc = "";
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -27,42 +23,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert file to ArrayBuffer
+    // Convert file to Buffer
     const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Load PDF document
-    const loadingTask = pdfjsLib.getDocument({
-      data: uint8Array,
-      useSystemFonts: true,
-      disableFontFace: true,
-    });
+    // Dynamically import pdf-parse-new (CommonJS module)
+    const pdfParse = (await import("pdf-parse-new")).default;
 
-    const pdf = await loadingTask.promise;
-    const numPages = pdf.numPages;
+    // Parse PDF
+    const data = await pdfParse(buffer);
 
-    // Extract text from all pages
-    const textParts: string[] = [];
-
-    for (let i = 1; i <= numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item) => {
-          // TextItem has 'str' property, TextMarkedContent does not
-          if ("str" in item) {
-            return (item as { str: string }).str;
-          }
-          return "";
-        })
-        .filter(Boolean)
-        .join(" ");
-      textParts.push(pageText);
-    }
-
-    const fullText = textParts.join("\n\n");
-
-    if (!fullText || fullText.trim().length === 0) {
+    if (!data.text || data.text.trim().length === 0) {
       return NextResponse.json(
         { error: "Could not extract text from PDF. The file may be image-based or corrupted." },
         { status: 400 }
@@ -70,8 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      text: fullText,
-      numPages,
+      text: data.text,
+      numPages: data.numpages,
     });
   } catch (error) {
     console.error("Error parsing PDF:", error);
