@@ -174,6 +174,7 @@ export async function POST(request: NextRequest) {
         currentStep: 1,
         completedSteps: [],
         status: "in_progress",
+        updatedAt: new Date(),
       },
       include: {
         influencer: true,

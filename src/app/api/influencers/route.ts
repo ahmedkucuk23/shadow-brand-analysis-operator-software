@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         name,
         handle: handle || null,
+        updatedAt: new Date(),
       },
     });
 
