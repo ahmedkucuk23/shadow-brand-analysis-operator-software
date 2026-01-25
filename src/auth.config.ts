@@ -1,16 +1,15 @@
 import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { db } from "@/lib/db"
 
-// Authorized users
-const USERS = [
+// Authorized users (credentials only - IDs come from database)
+const AUTHORIZED_USERS = [
   {
-    id: "1",
     email: "ahmed@mita.ba",
     password: "ahminProfil12!!",
     name: "Ahmed",
   },
   {
-    id: "2",
     email: "andrej@mita.ba",
     password: "Andraa12BEG!",
     name: "Andrej",
@@ -30,21 +29,36 @@ export default {
           return null
         }
 
-        const user = USERS.find(
+        const authorizedUser = AUTHORIZED_USERS.find(
           (u) =>
             u.email.toLowerCase() === (credentials.email as string).toLowerCase() &&
             u.password === credentials.password
         )
 
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-          }
+        if (!authorizedUser) {
+          return null
         }
 
-        return null
+        // Find or create user in database
+        let dbUser = await db.user.findUnique({
+          where: { email: authorizedUser.email.toLowerCase() }
+        })
+
+        if (!dbUser) {
+          // Create user in database
+          dbUser = await db.user.create({
+            data: {
+              email: authorizedUser.email.toLowerCase(),
+              name: authorizedUser.name,
+            }
+          })
+        }
+
+        return {
+          id: dbUser.id,
+          email: dbUser.email,
+          name: dbUser.name,
+        }
       },
     }),
   ],
