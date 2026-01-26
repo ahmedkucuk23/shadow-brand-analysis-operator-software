@@ -13,6 +13,11 @@ const AUTHORIZED_USERS = [
     password: "Andraa12BEG!",
     name: "Andrej",
   },
+  {
+    email: "ejub@mita.ba",
+    password: "BabinaSifraa14!",
+    name: "Ejub",
+  },
 ]
 
 export default {
