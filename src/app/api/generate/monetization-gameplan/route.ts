@@ -100,20 +100,29 @@ export async function POST(request: NextRequest) {
 - The unmet need in this niche
 
 ### 3. THE NUMBERS (Audience Value Projection)
-**Conversion Funnel Projection:**
-- Total Followers → Active Followers (engaged)
-- Active Followers → Warm Leads (consistent engagement)
-- Warm Leads → Hot Leads (ready to buy)
-- Hot Leads → Buyers (converted)
+
+**IMPORTANT - Revenue Calculation Formula:**
+For entry-level digital products (price range €50-€100), you MUST use this exact formula:
+
+**Projected Revenue = Followers × (Engagement Rate / 100) × 0.40 × Product Price**
+
+Example: 68,000 followers × 1.5% engagement × 40% × €60 = 68,000 × 0.015 × 0.40 × €60 = €24,480
+
+Show this calculation step-by-step in the document so the creator can see how the numbers are derived.
+
+For higher-priced products (Core €150-€300, Premium €500+), use progressively lower conversion multipliers:
+- Core products: Followers × (Engagement Rate / 100) × 0.10 × Product Price
+- Premium/VIP products: Followers × (Engagement Rate / 100) × 0.02 × Product Price
 
 **Revenue Projections by Product Tier:**
-| Product Type | Price Point | Expected Buyers | Projected Revenue |
-|--------------|-------------|-----------------|-------------------|
-| Digital Product (Entry) | $ | X | $ |
-| Group Program (Core) | $ | X | $ |
-| VIP/1:1 (Premium) | $ | X | $ |
+| Product Type | Price Point | Formula | Projected Revenue |
+|--------------|-------------|---------|-------------------|
+| Digital Product (Entry) | €X | Followers × ER × 40% × Price | €X |
+| Group Program (Core) | €X | Followers × ER × 10% × Price | €X |
+| VIP/1:1 (Premium) | €X | Followers × ER × 2% × Price | €X |
 
-- Annual revenue potential
+- Show the total combined revenue potential
+- Annual revenue potential (with repeat launches)
 - Lifetime customer value estimation
 
 ### 4. PRODUCT SUGGESTIONS
